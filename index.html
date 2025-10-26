@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF--8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LankaFresh | Authentic Sri Lankan Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Merriweather', 'serif'],
+            },
+            colors: {
+              primary: {
+                DEFAULT: '#f97316', // Orange 500
+                '600': '#ea580c',   // Orange 600
+                '700': '#c2410c',   // Orange 700
+              },
+            },
+            keyframes: {
+              'fade-in-up': {
+                '0%': {
+                  opacity: '0',
+                  transform: 'translateY(20px)'
+                },
+                '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0)'
+                },
+              }
+            },
+            animation: {
+              'fade-in-up': 'fade-in-up 0.6s ease-out forwards'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .cultural-divider .line {
+        transform: scaleX(0);
+        transition: transform 0.6s ease-out;
+      }
+      .cultural-divider .line-left { transform-origin: left; }
+      .cultural-divider .line-right { transform-origin: right; }
+
+      .cultural-divider.animate .line-left { transform: scaleX(1); transition-delay: 0s; }
+      .cultural-divider.animate .line-right { transform: scaleX(1); transition-delay: 0s; }
+
+      .cultural-divider .center-motif {
+          transform: scale(0.5);
+          opacity: 0;
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease-out;
+          transition-delay: 0.3s;
+      }
+      .cultural-divider.animate .center-motif {
+          transform: scale(1);
+          opacity: 1;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
+    "@supabase/supabase-js": "https://aistudiocdn.com/@supabase/supabase-js@^2.76.1"
+  }
+}
+</script>
+</head>
+  <body class="font-sans">
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>

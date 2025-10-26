@@ -1,0 +1,5 @@
+{
+  "name": "Sri Lanka Overseas Ordering Assistant",
+  "description": "A web application for people living abroad to browse and order Sri Lankan products. All payments and communication are handled via WhatsApp. Includes an admin dashboard for managing products, categories, and orders.",
+  "requestFramePermissions": []
+}

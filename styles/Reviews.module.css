@@ -1,0 +1,20 @@
+.reviewsContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.reviewsContainer {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+}
+
+@media (min-width: 768px) {
+    .reviewsContainer {
+        scroll-padding: 0 1rem;
+    }
+}
+
+.reviewNavBtn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.5);
+}
