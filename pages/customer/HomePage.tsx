@@ -117,7 +117,8 @@ const HomePage: React.FC = () => {
             <section
                 className="relative w-full h-[32rem] bg-gray-900 overflow-hidden"
                 style={{
-                    backgroundImage: 'url(/Background.jpg)', // Place your file as public/Background.jpg
+                    // Use public-root asset: place image at /public/Background.jpg
+                    backgroundImage: 'url(/pages/img/Background.jpg)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat'
