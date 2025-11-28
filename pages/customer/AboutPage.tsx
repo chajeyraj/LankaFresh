@@ -84,15 +84,15 @@ const AboutPage: React.FC = () => {
                 <AnimatedSection>
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div className="order-2 md:order-1">
-                            <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">Welcome to LankaFresh Services</h2>
+                            <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">Welcome to Lanka Drop Services</h2>
                             <p className="text-base text-gray-600 mb-6 leading-relaxed text-justify">
-                                Your trusted partner for fast and reliable deliveries across Sri Lanka and beyond. At LankaFresh, we bring the warmth of Sri Lankan home-made products and the true essence of our island directly to your doorstep — wherever you are in the world.
+                                Your trusted partner for fast and reliable deliveries across Sri Lanka and beyond. At Lanka Drop, we bring the warmth of Sri Lankan home-made products and the true essence of our island directly to your doorstep — wherever you are in the world.
                             </p>
                             <p className="text-base text-gray-600 leading-relaxed mb-6 text-justify">
                                 Our service is specially designed for Sri Lankans living abroad who miss the authentic taste and touch of home. From traditional food items to hand-crafted goods, we ensure that every order is handled with care, packed safely, and delivered quickly.
                             </p>
                             <p className="text-base text-gray-600 leading-relaxed text-justify">
-                                We operate under two main delivery types — <strong>Direct Delivery from Sri Lanka</strong>, where we purchase and ship items on your behalf, and two flexible delivery options by LankaFresh: <strong>Fast Delivery</strong> for urgent and time-sensitive packages, and <strong>Normal Delivery</strong> for cost-friendly shipping.
+                                We operate under two main delivery types — <strong>Direct Delivery from Sri Lanka</strong>, where we purchase and ship items on your behalf, and two flexible delivery options by Lanka Drop: <strong>Fast Delivery</strong> for urgent and time-sensitive packages, and <strong>Normal Delivery</strong> for cost-friendly shipping.
                             </p>
                         </div>
                 <div className="order-1 md:order-2">
@@ -156,9 +156,9 @@ const AboutPage: React.FC = () => {
                 <AnimatedSection>
                     <div className="text-center mb-12">
                         <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                            At LankaFresh, we believe every parcel carries memories, love, and the soul of Sri Lanka — that's why we take pride in every delivery, ensuring quality, reliability, and care from our island to your hands.
+                            At Lanka Drop, we believe every parcel carries memories, love, and the soul of Sri Lanka — that's why we take pride in every delivery, ensuring quality, reliability, and care from our island to your hands.
                         </p>
-                        <div className="mt-8 text-4xl">LankaFresh Services — Bringing Sri Lanka Closer to You. <span className="text-3xl">🇱🇰</span></div>
+                        <div className="mt-8 text-4xl">Lanka Drop Services — Bringing Sri Lanka Closer to You. <span className="text-3xl">🇱🇰</span></div>
                     </div>
                 </AnimatedSection>
 

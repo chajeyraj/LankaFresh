@@ -180,11 +180,11 @@ const ContactPage: React.FC = () => {
                                         <p className="text-sm">Quickest way to get in touch</p>
                                     </div>
                                 </a>
-                                <a href="mailto:support@lankafresh.com" className="flex items-center gap-4 text-gray-700 hover:text-primary transition-colors mt-4">
+                                <a href="mailto:support@lankadrop.com" className="flex items-center gap-4 text-gray-700 hover:text-primary transition-colors mt-4">
                                      <div className="bg-white p-3 rounded-full shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></div>
                                      <div>
                                         <p className="font-semibold">Email Us</p>
-                                        <p className="text-sm">support@lankafresh.com</p>
+                                        <p className="text-sm">support@lankadrop.com</p>
                                     </div>
                                 </a>
                                 <div className="flex items-center gap-4 text-gray-700 mt-4">

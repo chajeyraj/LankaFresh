@@ -101,14 +101,39 @@ const HomePage: React.FC = () => {
         fetchData();
     }, []);
 
+    const greetings = ["வணக்கம்", "Welcome", "ආයුබෝවන්"];
+    const [greetIndex, setGreetIndex] = useState(0);
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setGreetIndex((i) => (i + 1) % greetings.length);
+        }, 2500);
+        return () => clearInterval(id);
+    }, []);
+
     return (
         <div className="bg-orange-50/30">
             {/* Hero Section */}
-            <section className="relative w-full h-[32rem] bg-gray-900 overflow-hidden">
-                <img src="https://picsum.photos/seed/jaffna-courtyard-kolam/1600/800" alt="Traditional Tamil home entrance with a Kolam design" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <section
+                className="relative w-full h-[32rem] bg-gray-900 overflow-hidden"
+                style={{
+                    backgroundImage: 'url(/Background.jpg)', // Place your file as public/Background.jpg
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            >
+                {/* Overlay for readability */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60 flex items-center justify-center">
                     <div className="text-center text-white p-4">
-                        <h1 className="text-5xl md:text-6xl font-serif font-bold animate-fade-in-up">வணக்கம்  Wellcome  ආයුබෝවන් </h1>
+                        <h1 className="text-5xl md:text-6xl font-serif font-bold animate-fade-in-up">
+                            <span
+                                key={greetIndex}
+                                className={`${styles.greetWord}`}
+                            >
+                                {greetings[greetIndex]}
+                            </span>
+                        </h1>
                         <p className="text-lg md:text-xl mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>A taste of the Tamil,Sinhala homeland, delivered to you.</p>
                         <a href="#/shop" className="mt-8 inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors animate-fade-in-up" style={{ animationDelay: '0.6s' }}>Explore Now</a>
                     </div>
@@ -122,7 +147,7 @@ const HomePage: React.FC = () => {
                         <div>
                             <h2 className="text-4xl font-serif font-bold text-gray-800 mb-4">Our Heritage</h2>
                             <p className="text-lg text-gray-600 mb-6 leading-relaxed text-justify">
-                                LankaFresh is a celebration of Sri Lanka's rich Tamil culture. We are dedicated to preserving the legacy of our ancestors by bringing you the authentic flavours, crafts, and remedies from the heart of the Tamil homeland—from the vibrant markets of Yalpanam (Jaffna) to the serene villages of the North.
+                                Lanka Drop is a celebration of Sri Lanka's rich Tamil culture. We are dedicated to preserving the legacy of our ancestors by bringing you the authentic flavours, crafts, and remedies from the heart of the Tamil homeland—from the vibrant markets of Yalpanam (Jaffna) to the serene villages of the North.
                             </p>
                             <p className="text-lg text-gray-600 leading-relaxed text-justify">
                                 Each product tells a story, a tradition passed down through generations. We partner with local artisans and family-run farms to ensure every item is not just a product, but a piece of our shared heritage.

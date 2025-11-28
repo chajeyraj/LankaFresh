@@ -26,6 +26,18 @@
     margin: 1rem 0;
 }
 
+/* Greeting slide+fade animation */
+@keyframes greetSlideFadeIn {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.greetWord {
+    animation: greetSlideFadeIn 500ms ease-out;
+    will-change: opacity, transform;
+    display: inline-block;
+}
+
 .categoryButton {
     padding: 0.5rem 1rem;
     border: 1px solid #e5e7eb;

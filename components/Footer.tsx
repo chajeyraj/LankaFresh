@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* About Section */}
                     <div>
-                        <h3 className="text-lg font-serif font-bold text-primary">LankaFresh</h3>
+                        <h3 className="text-lg font-serif font-bold text-primary">Lanka Drop</h3>
                         <p className="mt-4 text-gray-300 text-sm">
                             Your direct link to the tastes and treasures of Sri Lanka, delivered worldwide.
                         </p>
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
                                 <a href="https://wa.me/94000000000" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white">WhatsApp</a>
                             </li>
                              <li className="flex items-center">
-                                <a href="mailto:support@lankafresh.com" className="text-gray-300 hover:text-white">support@lankafresh.com</a>
+                                <a href="mailto:support@lankadrop.com" className="text-gray-300 hover:text-white">support@lankadrop.com</a>
                             </li>
                         </ul>
                     </div>
@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
                 </div>
 
                 <div className="mt-8 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
-                    <p>&copy; {new Date().getFullYear()} LankaFresh. All Rights Reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Lanka Drop. All Rights Reserved.</p>
                 </div>
             </div>
         </footer>
