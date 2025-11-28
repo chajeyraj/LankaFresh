@@ -101,13 +101,35 @@ const HomePage: React.FC = () => {
         fetchData();
     }, []);
 
-    const greetings = ["வணக்கம்", "Welcome", "ආයුබෝවන්"];
-    const [greetIndex, setGreetIndex] = useState(0);
+    const slides = [
+        {
+            lang: 'ta',
+            title: 'வணக்கம்',
+            subtitle: 'உங்கள் தாய்நாட்டின் உணர்வுகள், அன்புடன் உங்கள் வாசல்வரை. ❤️🌍',
+            ctaText: 'Contact',
+            href: '#/shop',
+        },
+        {
+            lang: 'en',
+            title: 'Welcome',
+            subtitle: 'Homeland vibes, delivered to you with love. ❤️',
+            ctaText: 'Explore',
+            href: '#/shop',
+        },
+        {
+            lang: 'si',
+            title: 'ආයුබෝවන්',
+            subtitle: 'ඔබේ මව් බිම් සුවඳ, ආදරෙන් ඔබට ළඟටම. ❤️🌏',
+            ctaText: 'About Us',
+            href: '#/shop',
+        },
+    ];
+    const [slideIndex, setSlideIndex] = useState(0);
 
     useEffect(() => {
         const id = setInterval(() => {
-            setGreetIndex((i) => (i + 1) % greetings.length);
-        }, 2500);
+            setSlideIndex((i) => (i + 1) % slides.length);
+        }, 3000);
         return () => clearInterval(id);
     }, []);
 
@@ -129,14 +151,14 @@ const HomePage: React.FC = () => {
                     <div className="text-center text-white p-4">
                         <h1 className="text-5xl md:text-6xl font-serif font-bold animate-fade-in-up">
                             <span
-                                key={greetIndex}
+                                key={slideIndex}
                                 className={`${styles.greetWord}`}
                             >
-                                {greetings[greetIndex]}
+                                {slides[slideIndex].title}
                             </span>
                         </h1>
-                        <p className="text-lg md:text-xl mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>A taste of the Tamil,Sinhala homeland, delivered to you.</p>
-                        <a href="#/shop" className="mt-8 inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors animate-fade-in-up" style={{ animationDelay: '0.6s' }}>Explore Now</a>
+                        <p className="text-lg md:text-xl mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>{slides[slideIndex].subtitle}</p>
+                        <a href={slides[slideIndex].href} className="mt-8 inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors animate-fade-in-up" style={{ animationDelay: '0.6s' }}>{slides[slideIndex].ctaText}</a>
                     </div>
                 </div>
             </section>
