@@ -1,0 +1,8 @@
+sitemap: http://lankadrop.com/sitemap.xml
+
+User-agent: *
+Allow: /
+
+# Blocked utility paths (adjust if server routes change)
+Disallow: /admin
+Disallow: /admin/
