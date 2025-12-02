@@ -140,7 +140,7 @@ const HomePage: React.FC = () => {
                 className="relative w-full h-[32rem] bg-gray-900 overflow-hidden"
                 style={{
                     // Use public-root asset: place image at /public/Background.jpg
-                    backgroundImage: 'url(/pages/img/Background.jpg)',
+                    backgroundImage: 'url(/Background.jpg)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat'

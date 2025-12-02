@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
                                     title="Lanka Drop – Bringing Home the Taste of Lanka"
                                 >
                                     <img
-                                        src="/pages/img/logo.png"
+                                        src="/logo.png"
                                         alt="Lanka Drop logo"
                                         title="Lanka Drop – Bringing Home the Taste of Lanka"
                                         className="h-12 w-12 object-contain"
