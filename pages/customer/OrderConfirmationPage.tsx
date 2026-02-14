@@ -19,10 +19,10 @@ const OrderConfirmationPage: React.FC<{ orderId: string | null }> = ({ orderId }
                     </div>
                 )}
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#/" className="px-6 py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors">
+                    <a href="/" className="px-6 py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition-colors">
                         Return to Home
                     </a>
-                    <a href="#/shop" className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors">
+                    <a href="/shop" className="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors">
                         Continue Shopping
                     </a>
                 </div>

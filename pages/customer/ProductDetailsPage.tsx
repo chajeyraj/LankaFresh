@@ -13,7 +13,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ id }) => {
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
-    const { addToCart } = useCart();
+    const { addToCart, formatPrice } = useCart();
     
     useEffect(() => {
         const fetchProduct = async () => {
@@ -36,7 +36,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ id }) => {
     }
 
     if (!product) {
-        return <div className="text-center p-8"><h2>Product not found</h2><a href="#/shop" className="text-blue-500">Back to Shop</a></div>;
+        return <div className="text-center p-8"><h2>Product not found</h2><a href="/shop" className="text-blue-500">Back to Shop</a></div>;
     }
 
     const whatsappLink = `https://wa.me/94000000000?text=${encodeURIComponent(`Hi, I have a question about the product: ${product.name}`)}`;
@@ -53,7 +53,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ id }) => {
                     <div>
                         <span className="text-sm font-semibold text-gray-500 uppercase">{product.categories.name}</span>
                         <h1 className="text-4xl font-serif font-bold text-gray-800 mt-2 mb-4">{product.name}</h1>
-                        <p className="text-3xl font-semibold text-primary-600 mb-6">LKR {product.price_lkr.toFixed(2)}</p>
+                        <p className="text-3xl font-semibold text-primary mb-6">{formatPrice(product.price_lkr, product.price_usd)}</p>
 
                         <div className="flex items-center space-x-6 text-sm text-gray-600 my-6 border-t border-b py-4">
                             {product.origin && (
@@ -92,7 +92,8 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ id }) => {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button
                                 onClick={() => addToCart(product, quantity)}
-                                className="flex-1 px-8 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors"
+                                style={{ backgroundColor: '#f97316', color: '#ffffff' }}
+                                className="flex-1 px-8 py-3 font-semibold rounded-lg hover:opacity-90 transition-colors"
                             >
                                 Add to Cart
                             </button>

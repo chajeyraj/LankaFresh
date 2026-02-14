@@ -16,22 +16,25 @@ import ProductManagementPage from './pages/admin/ProductManagementPage';
 import CategoryManagementPage from './pages/admin/CategoryManagementPage';
 import OrderManagementPage from './pages/admin/OrderManagementPage';
 import CustomerManagementPage from './pages/admin/CustomerManagementPage';
+import ContactMessagesPage from './pages/admin/ContactMessagesPage';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import { supabaseUrl, supabaseAnonKey } from './services/supabase';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsAppButton';
 
 const PageWrapper: React.FC<{children: React.ReactNode}> = ({ children }) => (
     <>
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <WhatsAppButton />
     </>
 );
 
 const App: React.FC = () => {
-    const [route, setRoute] = useState(window.location.hash);
+    const [route, setRoute] = useState(`${window.location.pathname}${window.location.search}`);
     
     // Check for Supabase configuration
     if (!supabaseUrl || !supabaseAnonKey) {
@@ -51,18 +54,18 @@ const App: React.FC = () => {
     }
 
     useEffect(() => {
-        const handleHashChange = () => {
-            setRoute(window.location.hash);
+        const handleRouteChange = () => {
+            setRoute(`${window.location.pathname}${window.location.search}`);
         };
 
-        window.addEventListener('hashchange', handleHashChange);
-        handleHashChange(); // Initial check
+        window.addEventListener('popstate', handleRouteChange);
+        handleRouteChange();
 
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('popstate', handleRouteChange);
     }, []);
 
     const renderPage = () => {
-        const fullPath = route.slice(1) || '/';
+        const fullPath = route || '/';
         const path = fullPath.split('?')[0];
         
         // Customer Routes
@@ -83,14 +86,15 @@ const App: React.FC = () => {
         if (path === '/supply-chain') return <PageWrapper><SupplyChainPage /></PageWrapper>;
 
         // Admin Routes
-        if (path === '/admin/login') return <AdminLoginPage />;
+        if (path === '/admin/login') return <><Navbar /><main className="flex-grow"><AdminLoginPage /></main></>;
         if (path === '/admin' || path === '/admin/dashboard') return <ProtectedRoute><AdminDashboardPage /></ProtectedRoute>;
         if (path === '/admin/products') return <ProtectedRoute><ProductManagementPage /></ProtectedRoute>;
         if (path === '/admin/categories') return <ProtectedRoute><CategoryManagementPage /></ProtectedRoute>;
         if (path === '/admin/orders') return <ProtectedRoute><OrderManagementPage /></ProtectedRoute>;
         if (path === '/admin/customers') return <ProtectedRoute><CustomerManagementPage /></ProtectedRoute>;
+        if (path === '/admin/messages') return <ProtectedRoute><ContactMessagesPage /></ProtectedRoute>;
 
-        return <div className="text-center p-8"><h2>404: Page Not Found</h2><a href="#/" className="text-blue-500">Go Home</a></div>;
+        return <div className="text-center p-8"><h2>404: Page Not Found</h2><a href="/" className="text-blue-500">Go Home</a></div>;
     };
 
     return (

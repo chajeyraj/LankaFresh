@@ -1,8 +1,22 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { FiChevronDown, FiX } from 'react-icons/fi';
+import { useCart, Currency } from '../../contexts/CartContext';
 import ProductCard from '../../components/ProductCard';
 import Spinner from '../../components/Spinner';
 import { getProducts, getCategories } from '../../services/supabase';
 import { Product, Category } from '../../types';
+import catSpicesTea from '../../src/assets/categories/spices-tea.jpg';
+import catFoodSnacks from '../../src/assets/categories/food-snacks.jpg';
+import catHandicrafts from '../../src/assets/categories/handicrafts-art.jpg';
+import catAyurvedic from '../../src/assets/categories/ayurvedic-herbal.jpg';
+import catJaffna from '../../src/assets/categories/jaffna-traditional.jpg';
+import catPalm from '../../src/assets/categories/palm-traditional.jpg';
+import catHomemade from '../../src/assets/categories/homemade-products.jpg';
+import catHealth from '../../src/assets/categories/health-wellness.jpg';
+import catApparel from '../../src/assets/categories/apparel-textile.jpg';
+import promoSpices from '../../src/assets/shop/promo-spices.jpg';
+import promoMasks from '../../src/assets/shop/promo-masks.jpg';
+import promoTea from '../../src/assets/shop/promo-tea.jpg';
 
 // Custom hook for scroll animations
 const useScrollAnimation = <T extends HTMLElement>(options?: IntersectionObserverInit) => {
@@ -35,9 +49,9 @@ const useScrollAnimation = <T extends HTMLElement>(options?: IntersectionObserve
 
 const PromotionalCarousel: React.FC = () => {
     const slides = [
-        { title: "Weekly Spice Offer!", subtitle: "Get 15% off on all cinnamon products.", image: "https://picsum.photos/seed/sri-lankan-spices-offer/1200/500", link: "#/shop" },
-        { title: "New Handicraft Arrivals", subtitle: "Discover unique, handcrafted masks and sculptures.", image: "https://picsum.photos/seed/sri-lankan-masks-sale/1200/500", link: "#/shop" },
-        { title: "Ceylon Tea Special", subtitle: "Buy two packs and get one free.", image: "https://picsum.photos/seed/ceylon-tea-promo/1200/500", link: "#/shop" }
+        { title: "Weekly Spice Offer!", subtitle: "Get 15% off on all cinnamon products.", image: promoSpices, link: "/shop" },
+        { title: "New Handicraft Arrivals", subtitle: "Discover unique, handcrafted masks and sculptures.", image: promoMasks, link: "/shop" },
+        { title: "Ceylon Tea Special", subtitle: "Buy two packs and get one free.", image: promoTea, link: "/shop" }
     ];
     const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -51,14 +65,14 @@ const PromotionalCarousel: React.FC = () => {
     const [ref, isVisible] = useScrollAnimation<HTMLElement>();
 
     return (
-        <section ref={ref} className={`relative w-full h-96 rounded-lg overflow-hidden shadow-lg mb-12 transition-opacity duration-700 ${isVisible ? 'opacity-100 animate-fade-in-up' : 'opacity-0'}`}>
+        <section ref={ref} className={`relative w-full h-52 sm:h-72 lg:h-96 rounded-lg overflow-hidden shadow-lg mb-6 sm:mb-12 transition-opacity duration-700 ${isVisible ? 'opacity-100 animate-fade-in-up' : 'opacity-0'}`}>
             {slides.map((slide, index) => (
                 <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
                     <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-center text-white p-4">
-                        <h3 className="text-4xl lg:text-5xl font-serif font-bold">{slide.title}</h3>
-                        <p className="mt-2 text-lg lg:text-xl max-w-lg">{slide.subtitle}</p>
-                        <a href={slide.link} className="mt-6 bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors">Shop Now</a>
+                    <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center text-center text-white p-3 sm:p-4">
+                        <h3 className="text-xl sm:text-3xl lg:text-5xl font-serif font-bold">{slide.title}</h3>
+                        <p className="mt-1 sm:mt-2 text-sm sm:text-lg lg:text-xl max-w-lg">{slide.subtitle}</p>
+                        <a href={slide.link} className="mt-3 sm:mt-6 bg-primary text-white font-bold py-2 px-5 sm:py-3 sm:px-8 text-sm sm:text-base rounded-full hover:bg-primary-600 transition-colors">Shop Now</a>
                     </div>
                 </div>
             ))}
@@ -108,12 +122,34 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string 
 };
 
 const categoryPlaceholders: { [key: string]: string } = {
-    "Spices & Herbs": "https://picsum.photos/seed/spices-banner/400/300",
-    "Tea & Coffee": "https://picsum.photos/seed/tea-banner/400/300",
-    "Handicrafts": "https://picsum.photos/seed/handicrafts-banner/400/300",
-    "Sweets & Snacks": "https://picsum.photos/seed/sweets-banner/400/300",
+    "Spices & Tea": catSpicesTea,
+    "Food & Snacks": catFoodSnacks,
+    "Handicrafts & Art": catHandicrafts,
+    "Ayurvedic & Herbal": catAyurvedic,
+    "Jaffna Traditional": catJaffna,
+    "Palm Traditional": catPalm,
+    "Homemade Products": catHomemade,
+    "Health & Wellness": catHealth,
+    "Apparel & Textile": catApparel,
 };
 
+const currencies: Currency[] = ['LKR', 'USD', 'GBP', 'EUR', 'CAD', 'AUD', 'JPY', 'INR', 'SGD', 'AED', 'CHF', 'NZD', 'SEK', 'NOK'];
+
+const MobileCurrencyToggle: React.FC = () => {
+    const { currency, setCurrency } = useCart();
+    return (
+        <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value as Currency)}
+            className="text-[11px] font-semibold border border-emerald-200 rounded-full px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 transition-colors text-emerald-800 cursor-pointer focus:ring-2 focus:ring-emerald-300 focus:border-emerald-400"
+            title="Switch currency"
+        >
+            {currencies.map(c => (
+                <option key={c} value={c}>{c}</option>
+            ))}
+        </select>
+    );
+};
 
 const ShopPage: React.FC = () => {
     const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -121,7 +157,7 @@ const ShopPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     
     const [filters, setFilters] = useState(() => {
-        const params = new URLSearchParams(window.location.hash.split('?')[1]);
+        const params = new URLSearchParams(window.location.search);
         return {
             category: params.get('category') || '',
             search: params.get('search') || ''
@@ -145,16 +181,16 @@ const ShopPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const handleHashChange = () => {
-            const params = new URLSearchParams(window.location.hash.split('?')[1]);
+        const handleRouteChange = () => {
+            const params = new URLSearchParams(window.location.search);
             setFilters({
                 category: params.get('category') || '',
                 search: params.get('search') || ''
             });
              window.scrollTo(0, 0);
         };
-        window.addEventListener('hashchange', handleHashChange);
-        return () => window.removeEventListener('hashchange', handleHashChange);
+        window.addEventListener('popstate', handleRouteChange);
+        return () => window.removeEventListener('popstate', handleRouteChange);
     }, []);
 
     const filteredProducts = useMemo(() => {
@@ -166,34 +202,43 @@ const ShopPage: React.FC = () => {
     }, [allProducts, filters]);
 
     const handleCategoryChange = (categoryId: string) => {
-        const newHash = categoryId ? `/shop?category=${categoryId}` : '/shop';
-        if (window.location.hash.substring(1) === newHash) {
+        const nextPath = categoryId ? `/shop?category=${categoryId}` : '/shop';
+        const currentPath = `${window.location.pathname}${window.location.search}`;
+
+        if (currentPath === nextPath) {
              window.scrollTo(0, 0);
         } else {
-            window.location.hash = newHash;
+            window.history.pushState({}, '', nextPath);
+            setFilters({
+                category: categoryId,
+                search: ''
+            });
+            window.scrollTo(0, 0);
         }
     };
     
-    const currentCategoryName = categories.find(c => c.id === filters.category)?.name || 'All Products';
+    const currentCategoryName = filters.category
+        ? (categories.find(c => c.id === filters.category)?.name || 'Select category')
+        : 'Select category';
 
     const renderFilteredView = () => (
         <AnimatedSection>
-            <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-                <h1 className="text-3xl font-serif font-bold text-gray-800">
+            <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-3xl font-serif font-bold text-gray-800">
                     {filters.search ? `Searching for "${filters.search}"` : currentCategoryName}
                 </h1>
-                <p className="text-gray-600 mt-1">{filteredProducts.length} products found.</p>
+                <p className="text-gray-600 text-sm sm:text-base mt-1">{filteredProducts.length} products found.</p>
             </div>
             {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
                     {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-16 bg-white rounded-lg shadow-sm border">
-                    <h2 className="text-2xl text-gray-600">No products found.</h2>
-                    <p className="text-gray-500 mt-2">Try adjusting your search or filter.</p>
+                <div className="text-center py-12 sm:py-16 bg-white rounded-lg shadow-sm border">
+                    <h2 className="text-xl sm:text-2xl text-gray-600">No products found.</h2>
+                    <p className="text-gray-500 mt-2 text-sm sm:text-base">Try adjusting your search or filter.</p>
                 </div>
             )}
         </AnimatedSection>
@@ -205,18 +250,18 @@ const ShopPage: React.FC = () => {
         const visibleCategories = categories.filter(c => c.id).slice(0, 4);
 
         return (
-            <div className="space-y-12">
+            <div className="space-y-6 sm:space-y-12">
                 <PromotionalCarousel />
                 
                 {/* Featured Categories */}
                 <AnimatedSection>
-                    <h2 className="text-3xl font-serif font-bold text-gray-800 text-center mb-8">Shop by Category</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <h2 className="text-xl sm:text-3xl font-serif font-bold text-gray-800 text-center mb-4 sm:mb-8">Shop by Category</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
                         {visibleCategories.map(cat => (
-                            <a href={`#/shop?category=${cat.id}`} key={cat.id} className="relative rounded-lg overflow-hidden shadow-md group h-48 block">
+                            <a href={`/shop?category=${cat.id}`} key={cat.id} className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-48 block">
                                 <img src={categoryPlaceholders[cat.name] || `https://picsum.photos/seed/${cat.id}/400/300`} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                    <h3 className="text-white text-2xl font-semibold text-center">{cat.name}</h3>
+                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2">
+                                    <h3 className="text-white text-sm sm:text-2xl font-semibold text-center">{cat.name}</h3>
                                 </div>
                             </a>
                         ))}
@@ -228,8 +273,8 @@ const ShopPage: React.FC = () => {
                 {/* Bestsellers */}
                 {bestsellers.length > 0 && (
                     <AnimatedSection>
-                        <h2 className="text-3xl font-serif font-bold text-gray-800 text-center mb-8">Our Bestsellers</h2>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <h2 className="text-xl sm:text-3xl font-serif font-bold text-gray-800 text-center mb-4 sm:mb-8">Our Bestsellers</h2>
+                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                             {bestsellers.map(product => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
@@ -239,18 +284,18 @@ const ShopPage: React.FC = () => {
 
                 {/* Mid-page Promo Banner */}
                 <AnimatedSection>
-                     <div className="bg-orange-100 rounded-lg p-10 text-center flex flex-col items-center">
-                        <h3 className="text-3xl font-serif font-bold text-primary-700">Authentic Spices, Straight From the Source</h3>
-                        <p className="text-gray-700 mt-2 max-w-xl">Elevate your cooking with our hand-selected, premium spices from the gardens of Sri Lanka.</p>
-                        <a href={`#/shop?category=${categories.find(c=>c.name === 'Spices & Herbs')?.id || ''}`} className="mt-6 bg-primary text-white font-bold py-2 px-6 rounded-full hover:bg-primary-600 transition-colors">Explore Spices</a>
+                     <div className="bg-orange-100 rounded-lg p-5 sm:p-10 text-center flex flex-col items-center">
+                        <h3 className="text-lg sm:text-3xl font-serif font-bold text-primary-700">Authentic Products, Straight From Sri Lanka</h3>
+                        <p className="text-gray-700 mt-2 max-w-xl text-sm sm:text-base">Browse our curated selection of traditional Sri Lankan goods — spices, teas, handicrafts, and more.</p>
+                        <a href={`/shop?category=${categories.find(c=>c.name === 'Spices & Tea')?.id || ''}`} className="mt-4 sm:mt-6 bg-primary text-white font-bold py-2 px-5 sm:px-6 text-sm sm:text-base rounded-full hover:bg-primary-600 transition-colors">Explore Spices & Tea</a>
                     </div>
                 </AnimatedSection>
 
                 {/* New Arrivals */}
                  {newArrivals.length > 0 && (
                     <AnimatedSection>
-                        <h2 className="text-3xl font-serif font-bold text-gray-800 text-center mb-8">New Arrivals</h2>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <h2 className="text-xl sm:text-3xl font-serif font-bold text-gray-800 text-center mb-4 sm:mb-8">New Arrivals</h2>
+                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                             {newArrivals.map(product => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
@@ -282,30 +327,75 @@ const ShopPage: React.FC = () => {
         );
     };
 
+    const [showCategorySheet, setShowCategorySheet] = useState(false);
+
+    const handleMobileCategorySelect = (categoryId: string) => {
+        handleCategoryChange(categoryId);
+        setShowCategorySheet(false);
+    };
+
+    const categoryList = (onSelect: (id: string) => void) => (
+        <ul className="space-y-2">
+            {categories.map(category => (
+                <li key={category.id}>
+                    <button
+                        onClick={() => onSelect(category.id)}
+                        className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${filters.category === category.id ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
+                    >
+                        {category.name}
+                    </button>
+                </li>
+            ))}
+        </ul>
+    );
+
     return (
         <div className="bg-orange-50/30">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Mobile sticky filter bar */}
+            <div className="lg:hidden sticky top-16 z-10 bg-white shadow-sm border-b">
+                <div className="flex items-center justify-between px-4 py-2.5">
+                    <button
+                        onClick={() => setShowCategorySheet(true)}
+                        className="flex items-center gap-1 text-orange-800 font-medium bg-orange-50 border border-orange-200 rounded-full px-3 py-1.5 hover:bg-orange-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-300"
+                    >
+                        <span className="text-sm">{currentCategoryName}</span>
+                        <FiChevronDown className="w-4 h-4 text-orange-500" />
+                    </button>
+                    <MobileCurrencyToggle />
+                </div>
+            </div>
+
+            {/* Mobile bottom sheet */}
+            {showCategorySheet && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    <div
+                        className="absolute inset-0 bg-black/50 transition-opacity"
+                        onClick={() => setShowCategorySheet(false)}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-5 max-h-[70vh] overflow-y-auto animate-slide-up">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-gray-800">Categories</h3>
+                            <button onClick={() => setShowCategorySheet(false)} className="p-1 text-gray-500 hover:text-gray-800">
+                                <FiX className="w-5 h-5" />
+                            </button>
+                        </div>
+                        {categoryList(handleMobileCategorySelect)}
+                    </div>
+                </div>
+            )}
+
+            <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
                 <div className="flex flex-col lg:flex-row gap-8 items-start">
-                    <aside className="w-full lg:w-1/4">
+                    {/* Desktop sidebar - hidden on mobile */}
+                    <aside className="hidden lg:block w-full lg:w-1/4">
                         <div className="p-4 bg-white rounded-lg shadow-sm border sticky top-24">
                             <h3 className="text-lg font-semibold mb-4 text-gray-800">Categories</h3>
-                            <ul className="space-y-2">
-                                {categories.map(category => (
-                                    <li key={category.id}>
-                                        <button
-                                            onClick={() => handleCategoryChange(category.id)}
-                                            className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${filters.category === category.id ? 'bg-primary text-white' : 'text-gray-700 hover:bg-orange-100'}`}
-                                        >
-                                            {category.name}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
+                            {categoryList(handleCategoryChange)}
                         </div>
                     </aside>
 
                     <main className="w-full lg:w-3/4 min-h-[60vh]">
-                    {renderContent()}
+                        {renderContent()}
                     </main>
                 </div>
             </div>

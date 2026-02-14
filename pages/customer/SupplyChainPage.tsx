@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import heroSupplyChain from '../../src/assets/hero-supply-chain.jpg';
+import sustainableFarming from '../../src/assets/sustainable-farming.jpg';
 
 const SupplyChainPage: React.FC = () => {
   const [selectedContinent, setSelectedContinent] = useState<string | null>(null);
@@ -16,7 +18,7 @@ const SupplyChainPage: React.FC = () => {
     <div className="min-h-screen bg-white">
 
       {/* Hero Section */}
-      <section className="relative h-96 md:h-[28rem] bg-cover bg-center" style={{ backgroundImage: "url('https://picsum.photos/seed/supply-chain/1600/800')" }}>
+      <section className="relative h-96 md:h-[28rem] bg-cover bg-center" style={{ backgroundImage: `url('${heroSupplyChain}')` }}>
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="text-center text-white p-4">
             <h1 className="text-5xl md:text-6xl font-serif font-bold animate-fade-in-up">Our Supply Chain</h1>
@@ -69,7 +71,7 @@ const SupplyChainPage: React.FC = () => {
               </ul>
             </div>
             <div className="h-64 bg-gray-200 rounded-lg overflow-hidden">
-              <img src="https://picsum.photos/seed/sustainable-farming/800/500" alt="Sustainable farming in Sri Lanka" className="w-full h-full object-cover" />
+              <img src={sustainableFarming} alt="Sustainable farming in Sri Lanka" className="w-full h-full object-cover" />
             </div>
           </div>
         </section>

@@ -3,10 +3,25 @@ import React from 'react';
 import { signOut } from '../services/supabase';
 
 const AdminLayout: React.FC<{ children: React.ReactNode, title: string }> = ({ children, title }) => {
+    const navigate = (path: string) => {
+        if (window.location.pathname === path) return;
+        window.history.pushState({}, '', path);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    };
     
     const handleSignOut = async () => {
         await signOut();
-        window.location.hash = '/admin/login';
+        navigate('/admin/login');
+    };
+
+    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+        e.preventDefault();
+        navigate(path);
+    };
+
+    const linkClass = (path: string) => {
+        const isActive = window.location.pathname === path;
+        return `block px-4 py-2 rounded transition-colors ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700'}`;
     };
 
     return (
@@ -14,11 +29,12 @@ const AdminLayout: React.FC<{ children: React.ReactNode, title: string }> = ({ c
             <aside className="w-64 bg-gray-800 text-white flex flex-col">
                 <div className="p-4 text-2xl font-bold border-b border-gray-700">Admin Panel</div>
                 <nav className="flex-1 p-4 space-y-2">
-                    <a href="#/admin/dashboard" className="block px-4 py-2 rounded hover:bg-gray-700">Dashboard</a>
-                    <a href="#/admin/orders" className="block px-4 py-2 rounded hover:bg-gray-700">Orders</a>
-                    <a href="#/admin/products" className="block px-4 py-2 rounded hover:bg-gray-700">Products</a>
-                    <a href="#/admin/categories" className="block px-4 py-2 rounded hover:bg-gray-700">Categories</a>
-                    <a href="#/admin/customers" className="block px-4 py-2 rounded hover:bg-gray-700">Customers</a>
+                    <a href="/admin/dashboard" onClick={(e) => handleNavClick(e, '/admin/dashboard')} className={linkClass('/admin/dashboard')}>Dashboard</a>
+                    <a href="/admin/orders" onClick={(e) => handleNavClick(e, '/admin/orders')} className={linkClass('/admin/orders')}>Orders</a>
+                    <a href="/admin/products" onClick={(e) => handleNavClick(e, '/admin/products')} className={linkClass('/admin/products')}>Products</a>
+                    <a href="/admin/categories" onClick={(e) => handleNavClick(e, '/admin/categories')} className={linkClass('/admin/categories')}>Categories</a>
+                    <a href="/admin/customers" onClick={(e) => handleNavClick(e, '/admin/customers')} className={linkClass('/admin/customers')}>Customers</a>
+                    <a href="/admin/messages" onClick={(e) => handleNavClick(e, '/admin/messages')} className={linkClass('/admin/messages')}>Messages</a>
                 </nav>
                 <div className="p-4 border-t border-gray-700">
                     <button 

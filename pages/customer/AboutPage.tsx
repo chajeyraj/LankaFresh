@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useCart } from '../../contexts/CartContext';
+import heroAbout from '../../src/assets/hero-about.jpg';
 
 // Custom hook for scroll animations, adapted for this page
 const useScrollAnimation = <T extends HTMLElement>(options?: IntersectionObserverInit) => {
@@ -66,11 +68,84 @@ const CulturalAnimationDivider: React.FC = () => {
     );
 };
 
+const USD_TIERS = [
+    { min: 0, max: 65, label: 'Up to', advance: 'No advance required' },
+    { min: 65, max: 165, label: '', advance: '50% in advance' },
+    { min: 165, max: 500, label: '', advance: '75% in advance' },
+    { min: 500, max: 1650, label: '', advance: '85% in advance' },
+    { min: 1650, max: Infinity, label: 'Above', advance: '100% in advance' },
+];
+
+const USD_RATES_FOR_POLICY: Record<string, number> = {
+    LKR: 325, USD: 1, GBP: 0.79, EUR: 0.92, CAD: 1.36, AUD: 1.53,
+    JPY: 149.50, INR: 83.10, SGD: 1.34, AED: 3.67, CHF: 0.88, NZD: 1.64,
+    SEK: 10.45, NOK: 10.55,
+};
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    LKR: 'LKR ', USD: '$', GBP: '£', EUR: '€', CAD: 'CA$', AUD: 'A$',
+    JPY: '¥', INR: '₹', SGD: 'S$', AED: 'AED ', CHF: 'CHF ', NZD: 'NZ$',
+    SEK: 'SEK ', NOK: 'NOK ',
+};
+
+const formatPolicyAmount = (usdAmount: number, currency: string): string => {
+    const rate = USD_RATES_FOR_POLICY[currency] || 1;
+    const converted = usdAmount * rate;
+    const sym = CURRENCY_SYMBOLS[currency] || '$';
+    if (currency === 'JPY') return `${sym}${Math.round(converted).toLocaleString()}`;
+    if (currency === 'LKR') return `${sym}${Math.round(converted).toLocaleString()}`;
+    return `${sym}${converted.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+};
+
+const PaymentPolicyTable: React.FC = () => {
+    const { currency } = useCart();
+
+    const rows = USD_TIERS.map((tier) => {
+        if (tier.max === Infinity) {
+            return { range: `Above ${formatPolicyAmount(tier.min, currency)}`, advance: tier.advance };
+        }
+        if (tier.min === 0) {
+            return { range: `Up to ${formatPolicyAmount(tier.max, currency)}`, advance: tier.advance };
+        }
+        return {
+            range: `${formatPolicyAmount(tier.min, currency)} - ${formatPolicyAmount(tier.max, currency)}`,
+            advance: tier.advance,
+        };
+    });
+
+    return (
+        <>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">Payment Policy</h3>
+            <div className="overflow-x-auto">
+                <table className="min-w-full bg-white rounded-lg overflow-hidden">
+                    <thead className="bg-orange-100">
+                        <tr>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase">Order Value ({currency})</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase">Advance Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-orange-200">
+                        {rows.map((row, i) => (
+                            <tr key={i} className="hover:bg-orange-50">
+                                <td className="px-4 py-3 text-gray-700">{row.range}</td>
+                                <td className="px-4 py-3 text-gray-600">{row.advance}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <p className="mt-4 text-gray-600">
+                This tiered system helps us ensure fairness, security, and smooth processing for every valued customer.
+            </p>
+        </>
+    );
+};
+
 const AboutPage: React.FC = () => {
     return (
         <div className="bg-white">
             {/* Hero Section */}
-            <section className="relative h-96 bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('https://picsum.photos/seed/sri-lankan-tea-estate/1600/800')" }}>
+            <section className="relative h-96 bg-cover bg-center bg-fixed" style={{ backgroundImage: `url('${heroAbout}')` }}>
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                     <div className="text-center text-white p-4">
                         <h1 className="text-5xl md:text-6xl font-serif font-bold animate-fade-in-up">From Our Island, To Your Home</h1>
@@ -97,42 +172,7 @@ const AboutPage: React.FC = () => {
                         </div>
                 <div className="order-1 md:order-2">
                     <div className="bg-orange-50 p-6 rounded-lg shadow-xl">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">Payment Policy</h3>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white rounded-lg overflow-hidden">
-                                <thead className="bg-orange-100">
-                                    <tr>
-                                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase">Order Value (USD)</th>
-                                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 uppercase">Advance Payment</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-orange-200">
-                                    <tr className="hover:bg-orange-50">
-                                        <td className="px-4 py-3 text-gray-700">Up to $65</td>
-                                        <td className="px-4 py-3 text-gray-600">No advance required</td>
-                                    </tr>
-                                    <tr className="hover:bg-orange-50">
-                                        <td className="px-4 py-3 text-gray-700">$65 - $165</td>
-                                        <td className="px-4 py-3 text-gray-600">50% in advance</td>
-                                    </tr>
-                                    <tr className="hover:bg-orange-50">
-                                        <td className="px-4 py-3 text-gray-700">$165 - $500</td>
-                                        <td className="px-4 py-3 text-gray-600">75% in advance</td>
-                                    </tr>
-                                    <tr className="hover:bg-orange-50">
-                                        <td className="px-4 py-3 text-gray-700">$500 - $1,650</td>
-                                        <td className="px-4 py-3 text-gray-600">85% in advance</td>
-                                    </tr>
-                                    <tr className="hover:bg-orange-50">
-                                        <td className="px-4 py-3 text-gray-700">Above $1,650</td>
-                                        <td className="px-4 py-3 text-gray-600">100% in advance</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p className="mt-4 text-gray-600">
-                            This tiered system helps us ensure fairness, security, and smooth processing for every valued customer.
-                        </p>
+                        <PaymentPolicyTable />
                     </div>
                     </div>
                 </div>
@@ -221,7 +261,7 @@ const AboutPage: React.FC = () => {
                 <AnimatedSection className="mt-20 text-center bg-orange-50 p-12 rounded-lg">
                     <h2 className="text-3xl font-serif font-bold text-gray-800">Ready to Experience a Taste of Home?</h2>
                     <p className="text-gray-600 mt-2 mb-6 max-w-2xl mx-auto">Browse our curated selection of authentic Sri Lankan goods and let us bring a piece of the island to your doorstep.</p>
-                    <a href="#/shop" className="bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors text-lg">
+                    <a href="/shop" className="bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-600 transition-colors text-lg">
                         Explore Our Collection
                     </a>
                 </AnimatedSection>

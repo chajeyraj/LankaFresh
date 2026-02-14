@@ -33,17 +33,24 @@ const AdminDashboardPage: React.FC = () => {
     }, []);
 
     const statCards = [
-        { title: "Total Products", value: stats.products, link: "#/admin/products" },
-        { title: "Total Orders", value: stats.orders, link: "#/admin/orders" },
-        { title: "New Orders", value: stats.newOrders, link: "#/admin/orders" },
+        { title: "Total Products", value: stats.products, link: "/admin/products" },
+        { title: "Total Orders", value: stats.orders, link: "/admin/orders" },
+        { title: "New Orders", value: stats.newOrders, link: "/admin/orders" },
     ];
+
+    const handleCardClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+        e.preventDefault();
+        if (window.location.pathname === path) return;
+        window.history.pushState({}, '', path);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+    };
 
     return (
         <AdminLayout title="Dashboard">
             {loading ? <p>Loading stats...</p> : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {statCards.map(card => (
-                        <a href={card.link} key={card.title} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
+                        <a href={card.link} key={card.title} onClick={(e) => handleCardClick(e, card.link)} className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
                             <h3 className="text-gray-500 text-sm font-medium uppercase">{card.title}</h3>
                             <p className="text-3xl font-bold text-gray-800 mt-2">{card.value}</p>
                         </a>
