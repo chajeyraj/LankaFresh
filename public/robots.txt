@@ -1,4 +1,4 @@
-sitemap: http://lankadrop.com/sitemap.xml
+sitemap: https://lankadrop.com/sitemap.xml
 
 User-agent: *
 Allow: /

@@ -3,22 +3,24 @@ export interface Category {
   id: string;
   name: string;
   description?: string;
+  parent_id?: string | null;
+  parent?: Pick<Category, 'id' | 'name'> | null;
   created_at: string;
 }
 
 export interface Product {
   id: string;
-  category_id: string;
+  category_id: string | null;
   name: string;
   description: string;
   price_lkr: number;
   price_usd?: number;
-  image_url: string;
+  image_url: string | null;
   origin?: string;
   weight_grams?: number;
   cultural_significance?: string;
   created_at: string;
-  categories: { name: string };
+  categories: { id?: string; name: string; parent_id?: string | null } | null;
 }
 
 export interface Customer {

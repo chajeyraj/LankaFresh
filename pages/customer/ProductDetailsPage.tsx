@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Spinner from '../../components/Spinner';
 import { getProductById } from '../../services/supabase';
@@ -51,7 +50,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({ id }) => {
                     </div>
                     {/* Details Section */}
                     <div>
-                        <span className="text-sm font-semibold text-gray-500 uppercase">{product.categories.name}</span>
+                        <span className="text-sm font-semibold text-gray-500 uppercase">{product.categories?.name || 'Uncategorized'}</span>
                         <h1 className="text-4xl font-serif font-bold text-gray-800 mt-2 mb-4">{product.name}</h1>
                         <p className="text-3xl font-semibold text-primary mb-6">{formatPrice(product.price_lkr, product.price_usd)}</p>
 

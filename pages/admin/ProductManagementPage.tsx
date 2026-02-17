@@ -5,6 +5,31 @@ import { getProducts, getCategories, createProduct, updateProduct, deleteProduct
 import { Product, Category } from '../../types';
 import Spinner from '../../components/Spinner';
 
+const buildCategoryDepthMap = (allCategories: Category[]) => {
+    const byId = new Map(allCategories.map((category) => [category.id, category]));
+    const depthMap = new Map<string, number>();
+
+    const getDepth = (category: Category, visited = new Set<string>()): number => {
+        if (depthMap.has(category.id)) return depthMap.get(category.id)!;
+        if (!category.parent_id || !byId.has(category.parent_id)) {
+            depthMap.set(category.id, 0);
+            return 0;
+        }
+        if (visited.has(category.id)) {
+            depthMap.set(category.id, 0);
+            return 0;
+        }
+        visited.add(category.id);
+        const parent = byId.get(category.parent_id)!;
+        const depth = getDepth(parent, visited) + 1;
+        depthMap.set(category.id, depth);
+        return depth;
+    };
+
+    allCategories.forEach((category) => getDepth(category));
+    return depthMap;
+};
+
 const ProductManagementPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -42,8 +67,8 @@ const ProductManagementPage: React.FC = () => {
                 description: product.description,
                 price_lkr: product.price_lkr,
                 price_usd: product.price_usd || 0,
-                category_id: product.category_id,
-                image_url: product.image_url,
+                category_id: product.category_id || '',
+                image_url: product.image_url || '',
                 origin: product.origin || '',
                 weight_grams: product.weight_grams || 0,
                 cultural_significance: product.cultural_significance || ''
@@ -108,6 +133,13 @@ const ProductManagementPage: React.FC = () => {
         }
     };
 
+    const categoryDepthMap = buildCategoryDepthMap(categories);
+    const sortedCategories = [...categories].sort((a, b) => {
+        const depthDiff = (categoryDepthMap.get(a.id) || 0) - (categoryDepthMap.get(b.id) || 0);
+        if (depthDiff !== 0) return depthDiff;
+        return a.name.localeCompare(b.name);
+    });
+
     return (
         <AdminLayout title="Manage Products">
             <div className="flex justify-end mb-4">
@@ -126,7 +158,7 @@ const ProductManagementPage: React.FC = () => {
                             {products.map(p => (
                                 <tr key={p.id}>
                                     <td className="px-6 py-4 whitespace-nowrap">{p.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{p.categories.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{p.categories?.name || '-'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">{p.price_lkr.toFixed(2)}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button onClick={() => openModal(p)} className="text-indigo-600 hover:text-indigo-900 mr-4">Edit</button>
@@ -146,7 +178,7 @@ const ProductManagementPage: React.FC = () => {
                             {/* Form fields */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div><label>Name</label><input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full p-2 border rounded" required /></div>
-                                <div><label>Category</label><select name="category_id" value={formData.category_id} onChange={handleChange} className="w-full p-2 border rounded" required><option value="">Select Category</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></div>
+                                <div><label>Category</label><select name="category_id" value={formData.category_id} onChange={handleChange} className="w-full p-2 border rounded" required><option value="">Select Category</option>{sortedCategories.map(c => <option key={c.id} value={c.id}>{`${'-- '.repeat(categoryDepthMap.get(c.id) || 0)}${c.name}`}</option>)}</select></div>
                                 <div><label>Price (LKR)</label><input type="number" step="0.01" name="price_lkr" value={formData.price_lkr} onChange={handleChange} className="w-full p-2 border rounded" required /></div>
                                 <div><label>Price (USD)</label><input type="number" step="0.01" name="price_usd" value={formData.price_usd} onChange={handleChange} className="w-full p-2 border rounded" /></div>
                             </div>

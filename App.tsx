@@ -24,6 +24,101 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
 
+const BASE_URL = 'https://lankadrop.com';
+const DEFAULT_TITLE = 'Lanka Drop | Authentic Sri Lankan Goods Delivered Worldwide';
+const DEFAULT_DESCRIPTION = 'Shop authentic Sri Lankan groceries, spices, tea, snacks, and cultural products with worldwide delivery.';
+
+const ensureMetaTag = (selector: string, attributes: Record<string, string>) => {
+    let tag = document.head.querySelector(selector) as HTMLMetaElement | null;
+    if (!tag) {
+        tag = document.createElement('meta');
+        if (attributes.name) tag.setAttribute('name', attributes.name);
+        if (attributes.property) tag.setAttribute('property', attributes.property);
+        document.head.appendChild(tag);
+    }
+    if (attributes.content) tag.setAttribute('content', attributes.content);
+};
+
+const setCanonical = (href: string) => {
+    let canonical = document.head.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
+    if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', href);
+};
+
+const applySeoForRoute = (fullPath: string) => {
+    const path = (fullPath || '/').split('?')[0];
+    const url = new URL(fullPath || '/', BASE_URL).toString();
+
+    const seoByRoute: Record<string, { title: string; description: string; robots?: string }> = {
+        '/': {
+            title: 'Lanka Drop | Authentic Sri Lankan Goods Delivered Worldwide',
+            description: 'Discover authentic Sri Lankan groceries, spices, Ceylon tea, snacks, and handmade products with worldwide delivery.',
+        },
+        '/shop': {
+            title: 'Shop Sri Lankan Products | Lanka Drop',
+            description: 'Browse Sri Lankan spices, tea, snacks, palm products, handicrafts, and more. Order online with international delivery.',
+        },
+        '/about': {
+            title: 'About Lanka Drop | Sri Lankan Heritage Marketplace',
+            description: 'Learn how Lanka Drop connects global customers with authentic Sri Lankan products and transparent sourcing.',
+        },
+        '/contact': {
+            title: 'Contact Lanka Drop | Customer Support',
+            description: 'Get in touch with Lanka Drop for order support, product questions, and partnership inquiries.',
+        },
+        '/supply-chain': {
+            title: 'Supply Chain | Lanka Drop',
+            description: 'Explore Lanka Drop’s transparent supply chain from Sri Lankan producers to worldwide customers.',
+        },
+        '/cart': {
+            title: 'Your Cart | Lanka Drop',
+            description: 'Review selected Sri Lankan products in your cart before checkout.',
+            robots: 'noindex,follow',
+        },
+        '/checkout': {
+            title: 'Checkout | Lanka Drop',
+            description: 'Securely complete your Lanka Drop order and confirm worldwide delivery details.',
+            robots: 'noindex,nofollow',
+        },
+    };
+
+    let seo = seoByRoute[path];
+
+    if (path.startsWith('/product/')) {
+        seo = {
+            title: 'Product Details | Lanka Drop',
+            description: 'View product details, pricing, and cultural highlights for authentic Sri Lankan goods.',
+        };
+    }
+
+    if (path.startsWith('/order-confirmation') || path.startsWith('/admin')) {
+        seo = {
+            title: path.startsWith('/admin') ? 'Admin | Lanka Drop' : 'Order Confirmation | Lanka Drop',
+            description: path.startsWith('/admin')
+                ? 'Lanka Drop admin area.'
+                : 'Your Lanka Drop order confirmation details.',
+            robots: 'noindex,nofollow',
+        };
+    }
+
+    const finalSeo = seo || { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION, robots: 'noindex,follow' };
+
+    document.title = finalSeo.title;
+    setCanonical(url);
+
+    ensureMetaTag("meta[name='description']", { name: 'description', content: finalSeo.description });
+    ensureMetaTag("meta[name='robots']", { name: 'robots', content: finalSeo.robots || 'index,follow' });
+    ensureMetaTag("meta[property='og:title']", { property: 'og:title', content: finalSeo.title });
+    ensureMetaTag("meta[property='og:description']", { property: 'og:description', content: finalSeo.description });
+    ensureMetaTag("meta[property='og:url']", { property: 'og:url', content: url });
+    ensureMetaTag("meta[name='twitter:title']", { name: 'twitter:title', content: finalSeo.title });
+    ensureMetaTag("meta[name='twitter:description']", { name: 'twitter:description', content: finalSeo.description });
+};
+
 const PageWrapper: React.FC<{children: React.ReactNode}> = ({ children }) => (
     <>
         <Navbar />
@@ -63,6 +158,10 @@ const App: React.FC = () => {
 
         return () => window.removeEventListener('popstate', handleRouteChange);
     }, []);
+
+    useEffect(() => {
+        applySeoForRoute(route);
+    }, [route]);
 
     const renderPage = () => {
         const fullPath = route || '/';

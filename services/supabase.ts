@@ -20,7 +20,7 @@ export const getClient = (): SupabaseClient => {
 // Product Management
 export const getProducts = async (filters: { category?: string, search?: string } = {}) => {
     const supabase = getClient();
-    let query = supabase.from('products').select('*, categories(name)');
+    let query = supabase.from('products').select('*, categories(id, name)');
     if (filters.category) {
         query = query.eq('category_id', filters.category);
     }
@@ -34,7 +34,7 @@ export const getProducts = async (filters: { category?: string, search?: string 
 
 export const getProductById = async (id: string) => {
     const supabase = getClient();
-    const { data, error } = await supabase.from('products').select('*, categories(name)').eq('id', id).single();
+    const { data, error } = await supabase.from('products').select('*, categories(id, name)').eq('id', id).single();
     if (error) throw new Error(error.message);
     return data as Product;
 };
@@ -73,17 +73,26 @@ export const getCategories = async () => {
     const supabase = getClient();
     const { data, error } = await supabase.from('categories').select('*').order('name');
     if (error) throw new Error(error.message);
-    return data as Category[];
+
+    const categories = (data || []) as Category[];
+    const categoryById = new Map(categories.map((category) => [category.id, category]));
+    return categories.map((category) => ({
+        ...category,
+        parent: category.parent_id ? (() => {
+            const parent = categoryById.get(category.parent_id);
+            return parent ? { id: parent.id, name: parent.name } : null;
+        })() : null,
+    }));
 };
 
-export const createCategory = async (categoryData: Omit<Category, 'id' | 'created_at'>) => {
+export const createCategory = async (categoryData: Omit<Category, 'id' | 'created_at' | 'parent'>) => {
     const supabase = getClient();
     const { data, error } = await supabase.from('categories').insert(categoryData).select().single();
     if (error) throw new Error(error.message);
     return data;
 };
 
-export const updateCategory = async (id: string, categoryData: Partial<Omit<Category, 'id' | 'created_at'>>) => {
+export const updateCategory = async (id: string, categoryData: Partial<Omit<Category, 'id' | 'created_at' | 'parent'>>) => {
     const supabase = getClient();
     const { data, error } = await supabase.from('categories').update(categoryData).eq('id', id).select().single();
     if (error) throw new Error(error.message);

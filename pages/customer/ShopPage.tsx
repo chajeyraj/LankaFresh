@@ -46,6 +46,31 @@ const useScrollAnimation = <T extends HTMLElement>(options?: IntersectionObserve
     return [ref, isVisible] as const;
 };
 
+const getDescendantCategoryIds = (selectedCategoryId: string, allCategories: Category[]) => {
+    if (!selectedCategoryId) return new Set<string>();
+    const childrenByParentId = new Map<string, string[]>();
+
+    allCategories.forEach((category) => {
+        if (!category.parent_id || !category.id) return;
+        const existing = childrenByParentId.get(category.parent_id) || [];
+        childrenByParentId.set(category.parent_id, [...existing, category.id]);
+    });
+
+    const stack = [selectedCategoryId];
+    const descendants = new Set<string>();
+
+    while (stack.length > 0) {
+        const currentId = stack.pop()!;
+        descendants.add(currentId);
+        const children = childrenByParentId.get(currentId) || [];
+        children.forEach((childId) => {
+            if (!descendants.has(childId)) stack.push(childId);
+        });
+    }
+
+    return descendants;
+};
+
 
 const PromotionalCarousel: React.FC = () => {
     const slides = [
@@ -155,6 +180,8 @@ const ShopPage: React.FC = () => {
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showCategorySheet, setShowCategorySheet] = useState(false);
+    const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<string>>(new Set());
     
     const [filters, setFilters] = useState(() => {
         const params = new URLSearchParams(window.location.search);
@@ -194,12 +221,17 @@ const ShopPage: React.FC = () => {
     }, []);
 
     const filteredProducts = useMemo(() => {
+        const validCategories = categories.filter((category) => category.id);
+        const categoryScope = filters.category
+            ? getDescendantCategoryIds(filters.category, validCategories)
+            : null;
+
         return allProducts.filter(product => {
-            const categoryMatch = filters.category ? product.category_id === filters.category : true;
+            const categoryMatch = categoryScope ? !!product.category_id && categoryScope.has(product.category_id) : true;
             const searchMatch = filters.search ? product.name.toLowerCase().includes(filters.search.toLowerCase()) : true;
             return categoryMatch && searchMatch;
         });
-    }, [allProducts, filters]);
+    }, [allProducts, categories, filters]);
 
     const handleCategoryChange = (categoryId: string) => {
         const nextPath = categoryId ? `/shop?category=${categoryId}` : '/shop';
@@ -221,6 +253,77 @@ const ShopPage: React.FC = () => {
         ? (categories.find(c => c.id === filters.category)?.name || 'Select category')
         : 'Select category';
 
+    const realCategories = useMemo(
+        () => categories.filter((category) => !!category.id),
+        [categories]
+    );
+
+    const categoryById = useMemo(
+        () => new Map(realCategories.map((category) => [category.id, category])),
+        [realCategories]
+    );
+
+    const childrenByParentId = useMemo(() => {
+        const map = new Map<string, Category[]>();
+        realCategories.forEach((category) => {
+            const parentKey = category.parent_id || '__root__';
+            const existing = map.get(parentKey) || [];
+            map.set(parentKey, [...existing, category]);
+        });
+        map.forEach((items, key) => {
+            map.set(key, [...items].sort((a, b) => a.name.localeCompare(b.name)));
+        });
+        return map;
+    }, [realCategories]);
+
+    const topLevelCategories = useMemo(
+        () => childrenByParentId.get('__root__') || [],
+        [childrenByParentId]
+    );
+
+    useEffect(() => {
+        if (!filters.category) return;
+
+        setExpandedCategoryIds((previous) => {
+            const next = new Set(previous);
+            let current = categoryById.get(filters.category);
+            while (current?.parent_id) {
+                next.add(current.parent_id);
+                current = categoryById.get(current.parent_id);
+            }
+            return next;
+        });
+    }, [filters.category, categoryById]);
+
+    const groupedFilteredProducts = useMemo(() => {
+        if (!filters.category || filters.search) return null;
+
+        const selectedCategory = categoryById.get(filters.category);
+        if (!selectedCategory) return null;
+
+        const directChildren = childrenByParentId.get(selectedCategory.id) || [];
+        if (directChildren.length === 0) return null;
+
+        const groups = directChildren.map((childCategory) => {
+            const scope = getDescendantCategoryIds(childCategory.id, realCategories);
+            const products = filteredProducts.filter((product) => !!product.category_id && scope.has(product.category_id));
+            return {
+                category: childCategory,
+                products,
+            };
+        }).filter((group) => group.products.length > 0);
+
+        const parentOnlyProducts = filteredProducts.filter((product) => product.category_id === selectedCategory.id);
+        if (parentOnlyProducts.length > 0) {
+            groups.unshift({
+                category: selectedCategory,
+                products: parentOnlyProducts,
+            });
+        }
+
+        return groups.length > 0 ? groups : null;
+    }, [filters.category, filters.search, categoryById, childrenByParentId, realCategories, filteredProducts]);
+
     const renderFilteredView = () => (
         <AnimatedSection>
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border mb-4 sm:mb-6">
@@ -229,7 +332,29 @@ const ShopPage: React.FC = () => {
                 </h1>
                 <p className="text-gray-600 text-sm sm:text-base mt-1">{filteredProducts.length} products found.</p>
             </div>
-            {filteredProducts.length > 0 ? (
+            {groupedFilteredProducts ? (
+                <div className="space-y-8">
+                    {groupedFilteredProducts.map((group) => (
+                        <section key={group.category.id}>
+                            <div className="mb-3 sm:mb-4 rounded-lg border border-orange-200 bg-gradient-to-r from-orange-50 to-white px-4 py-3">
+                                <div className="flex items-center justify-between gap-3">
+                                    <h2 className="text-lg sm:text-2xl font-serif font-bold text-orange-900 border-l-4 border-orange-500 pl-3">
+                                        {group.category.name}
+                                    </h2>
+                                    <span className="shrink-0 rounded-full bg-orange-100 text-orange-800 text-xs sm:text-sm font-semibold px-3 py-1 border border-orange-200">
+                                        {group.products.length} items
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
+                                {group.products.map((product) => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+                </div>
+            ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6">
                     {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} />
@@ -247,7 +372,7 @@ const ShopPage: React.FC = () => {
     const renderFullShopExperience = () => {
         const bestsellers = allProducts.slice(0, 4);
         const newArrivals = allProducts.slice(4, 8);
-        const visibleCategories = categories.filter(c => c.id).slice(0, 4);
+        const visibleCategories = topLevelCategories.slice(0, 4);
 
         return (
             <div className="space-y-6 sm:space-y-12">
@@ -327,25 +452,80 @@ const ShopPage: React.FC = () => {
         );
     };
 
-    const [showCategorySheet, setShowCategorySheet] = useState(false);
-
-    const handleMobileCategorySelect = (categoryId: string) => {
-        handleCategoryChange(categoryId);
-        setShowCategorySheet(false);
+    const toggleCategoryExpansion = (categoryId: string) => {
+        setExpandedCategoryIds((previous) => {
+            const next = new Set(previous);
+            if (next.has(categoryId)) {
+                next.delete(categoryId);
+            } else {
+                next.add(categoryId);
+            }
+            return next;
+        });
     };
 
-    const categoryList = (onSelect: (id: string) => void) => (
-        <ul className="space-y-2">
-            {categories.map(category => (
+    const handleCategoryNodeClick = (category: Category, isMobile: boolean) => {
+        const childCategories = childrenByParentId.get(category.id) || [];
+        const hasChildren = childCategories.length > 0;
+
+        if (hasChildren) {
+            toggleCategoryExpansion(category.id);
+        }
+
+        handleCategoryChange(category.id);
+
+        if (isMobile && !hasChildren) {
+            setShowCategorySheet(false);
+        }
+    };
+
+    const renderCategoryTree = (parentId: string | null, level: number, isMobile: boolean): React.ReactNode => {
+        const categoriesAtLevel = childrenByParentId.get(parentId || '__root__') || [];
+
+        return categoriesAtLevel.map((category) => {
+            const childCategories = childrenByParentId.get(category.id) || [];
+            const hasChildren = childCategories.length > 0;
+            const isExpanded = expandedCategoryIds.has(category.id);
+            const isSelected = filters.category === category.id;
+
+            return (
                 <li key={category.id}>
                     <button
-                        onClick={() => onSelect(category.id)}
-                        className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${filters.category === category.id ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
+                        onClick={() => handleCategoryNodeClick(category, isMobile)}
+                        className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${isSelected ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
+                        style={{ paddingLeft: `${level * 16 + 12}px` }}
                     >
-                        {category.name}
+                        <span className="flex items-center justify-between gap-3">
+                            <span>{category.name}</span>
+                            {hasChildren && (
+                                <FiChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            )}
+                        </span>
                     </button>
+                    {hasChildren && isExpanded && (
+                        <ul className="mt-1 space-y-1">
+                            {renderCategoryTree(category.id, level + 1, isMobile)}
+                        </ul>
+                    )}
                 </li>
-            ))}
+            );
+        });
+    };
+
+    const categoryList = (isMobile: boolean) => (
+        <ul className="space-y-2">
+            <li>
+                <button
+                    onClick={() => {
+                        handleCategoryChange('');
+                        if (isMobile) setShowCategorySheet(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${!filters.category ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
+                >
+                    All Categories
+                </button>
+            </li>
+            {renderCategoryTree(null, 0, isMobile)}
         </ul>
     );
 
@@ -379,7 +559,7 @@ const ShopPage: React.FC = () => {
                                 <FiX className="w-5 h-5" />
                             </button>
                         </div>
-                        {categoryList(handleMobileCategorySelect)}
+                        {categoryList(true)}
                     </div>
                 </div>
             )}
@@ -390,7 +570,7 @@ const ShopPage: React.FC = () => {
                     <aside className="hidden lg:block w-full lg:w-1/4">
                         <div className="p-4 bg-white rounded-lg shadow-sm border sticky top-24">
                             <h3 className="text-lg font-semibold mb-4 text-gray-800">Categories</h3>
-                            {categoryList(handleCategoryChange)}
+                            {categoryList(false)}
                         </div>
                     </aside>
 
