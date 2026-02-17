@@ -1,5 +1,5 @@
 import { createClient, Session, SupabaseClient } from '@supabase/supabase-js';
-import { Product, Category, Customer, Order, OrderStatus, CartItem } from '../types';
+import { Product, Category, Customer, Order, OrderStatus, CartItem, Testimonial } from '../types';
 
 export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
@@ -102,6 +102,38 @@ export const updateCategory = async (id: string, categoryData: Partial<Omit<Cate
 export const deleteCategory = async (id: string) => {
     const supabase = getClient();
     const { error } = await supabase.from('categories').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+};
+
+// Testimonials Management
+export const getTestimonials = async (publicOnly: boolean = true) => {
+    const supabase = getClient();
+    let query = supabase.from('testimonials').select('*');
+    if (publicOnly) {
+        query = query.eq('is_published', true);
+    }
+    const { data, error } = await query.order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data as Testimonial[];
+};
+
+export const createTestimonial = async (testimonialData: Omit<Testimonial, 'id' | 'created_at'>) => {
+    const supabase = getClient();
+    const { data, error } = await supabase.from('testimonials').insert(testimonialData).select().single();
+    if (error) throw new Error(error.message);
+    return data as Testimonial;
+};
+
+export const updateTestimonial = async (id: string, testimonialData: Partial<Omit<Testimonial, 'id' | 'created_at'>>) => {
+    const supabase = getClient();
+    const { data, error } = await supabase.from('testimonials').update(testimonialData).eq('id', id).select().single();
+    if (error) throw new Error(error.message);
+    return data as Testimonial;
+};
+
+export const deleteTestimonial = async (id: string) => {
+    const supabase = getClient();
+    const { error } = await supabase.from('testimonials').delete().eq('id', id);
     if (error) throw new Error(error.message);
 };
 

@@ -242,6 +242,42 @@ export type Database = {
           },
         ]
       }
+      testimonials: {
+        Row: {
+          avatar_url: string | null
+          comment: string
+          created_at: string
+          id: string
+          is_published: boolean
+          location: string | null
+          name: string
+          rating: number
+          sort_order: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          comment: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          name: string
+          rating?: number
+          sort_order?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          comment?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          name?: string
+          rating?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

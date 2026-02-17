@@ -17,6 +17,7 @@ import CategoryManagementPage from './pages/admin/CategoryManagementPage';
 import OrderManagementPage from './pages/admin/OrderManagementPage';
 import CustomerManagementPage from './pages/admin/CustomerManagementPage';
 import ContactMessagesPage from './pages/admin/ContactMessagesPage';
+import TestimonialManagementPage from './pages/admin/TestimonialManagementPage';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import { supabaseUrl, supabaseAnonKey } from './services/supabase';
@@ -189,6 +190,7 @@ const App: React.FC = () => {
         if (path === '/admin' || path === '/admin/dashboard') return <ProtectedRoute><AdminDashboardPage /></ProtectedRoute>;
         if (path === '/admin/products') return <ProtectedRoute><ProductManagementPage /></ProtectedRoute>;
         if (path === '/admin/categories') return <ProtectedRoute><CategoryManagementPage /></ProtectedRoute>;
+        if (path === '/admin/testimonials') return <ProtectedRoute><TestimonialManagementPage /></ProtectedRoute>;
         if (path === '/admin/orders') return <ProtectedRoute><OrderManagementPage /></ProtectedRoute>;
         if (path === '/admin/customers') return <ProtectedRoute><CustomerManagementPage /></ProtectedRoute>;
         if (path === '/admin/messages') return <ProtectedRoute><ContactMessagesPage /></ProtectedRoute>;

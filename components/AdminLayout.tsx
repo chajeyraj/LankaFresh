@@ -33,6 +33,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode, title: string }> = ({ c
                     <a href="/admin/orders" onClick={(e) => handleNavClick(e, '/admin/orders')} className={linkClass('/admin/orders')}>Orders</a>
                     <a href="/admin/products" onClick={(e) => handleNavClick(e, '/admin/products')} className={linkClass('/admin/products')}>Products</a>
                     <a href="/admin/categories" onClick={(e) => handleNavClick(e, '/admin/categories')} className={linkClass('/admin/categories')}>Categories</a>
+                    <a href="/admin/testimonials" onClick={(e) => handleNavClick(e, '/admin/testimonials')} className={linkClass('/admin/testimonials')}>Testimonials</a>
                     <a href="/admin/customers" onClick={(e) => handleNavClick(e, '/admin/customers')} className={linkClass('/admin/customers')}>Customers</a>
                     <a href="/admin/messages" onClick={(e) => handleNavClick(e, '/admin/messages')} className={linkClass('/admin/messages')}>Messages</a>
                 </nav>

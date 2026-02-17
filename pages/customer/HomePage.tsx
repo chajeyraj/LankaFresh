@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from '../../styles/HomePage.module.css';
 import ProductCard from '../../components/ProductCard';
-import { getProducts, getCategories } from '../../services/supabase';
-import { Product, Category } from '../../types';
+import { getProducts, getCategories, getTestimonials } from '../../services/supabase';
+import { Product, Category, Testimonial } from '../../types';
 import Spinner from '../../components/Spinner';
 import NewsletterSignup from '../../components/NewsletterSignup';
 import catSpicesTea from '../../src/assets/categories/spices-tea.jpg';
@@ -97,6 +97,7 @@ const categoryPlaceholders: { [key: string]: string } = {
 const HomePage: React.FC = () => {
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [loading, setLoading] = useState(true);
     const reviewsContainerRef = useRef<HTMLDivElement>(null);
     
@@ -104,12 +105,14 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [productsData, categoriesData] = await Promise.all([
+                const [productsData, categoriesData, testimonialsData] = await Promise.all([
                     getProducts(),
                     getCategories(),
+                    getTestimonials(true),
                 ]);
                 setFeaturedProducts(productsData.slice(0, 4));
-                setCategories(categoriesData);
+                setCategories(categoriesData.filter((category) => !category.parent_id));
+                setTestimonials(testimonialsData);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -131,14 +134,7 @@ const HomePage: React.FC = () => {
         return () => clearInterval(id);
     }, []);
 
-    const reviews = [
-        { name: "Priya K.", location: "Toronto, Canada", rating: 5, comment: "The spices are incredibly fresh and authentic. Tastes just like my grandmother's cooking!", avatar: "https://randomuser.me/api/portraits/women/32.jpg" },
-        { name: "Rajesh M.", location: "London, UK", rating: 5, comment: "Finally found a place that delivers genuine Sri Lankan products. The mango pickle is out of this world!", avatar: "https://randomuser.me/api/portraits/men/45.jpg" },
-        { name: "Anjali P.", location: "Sydney, Australia", rating: 5, comment: "Excellent customer service and the products arrived perfectly packed. Will definitely order again!", avatar: "https://randomuser.me/api/portraits/women/68.jpg" },
-        { name: "Kumar S.", location: "New York, USA", rating: 5, comment: "The tea leaves are exceptional quality. Reminds me of home. Will be a returning customer for sure!", avatar: "https://randomuser.me/api/portraits/men/22.jpg" },
-        { name: "Meena R.", location: "Dubai, UAE", rating: 5, comment: "Authentic Sri Lankan flavors delivered right to my doorstep. The packaging was excellent!", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-    ];
-    const loopedReviews = [...reviews, ...reviews];
+    const loopedReviews = [...testimonials, ...testimonials];
 
     const scrollReviews = (direction: 1 | -1) => {
         const container = reviewsContainerRef.current;
@@ -346,54 +342,59 @@ const HomePage: React.FC = () => {
                     <h2 className={`text-xl sm:text-2xl md:text-3xl font-serif font-bold text-center mb-6 md:mb-8 ${styles.sectionHeading}`}>
                         What Our Customers Say
                     </h2>
+                    {testimonials.length > 0 ? (
+                        <div className="relative flex items-center">
+                            {/* Left Arrow */}
+                            <button
+                                className={`${styles.reviewNavBtn} flex-shrink-0 bg-white p-2 md:p-2.5 rounded-full shadow-md hover:bg-amber-50 transition-all hover:shadow-lg border border-amber-100 active:scale-95 mr-2 md:mr-3 z-10`}
+                                onClick={() => scrollReviews(-1)}
+                            >
+                                <svg className="w-4 h-4 md:w-5 md:h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
 
-                    <div className="relative flex items-center">
-                        {/* Left Arrow */}
-                        <button
-                            className={`${styles.reviewNavBtn} flex-shrink-0 bg-white p-2 md:p-2.5 rounded-full shadow-md hover:bg-amber-50 transition-all hover:shadow-lg border border-amber-100 active:scale-95 mr-2 md:mr-3 z-10`}
-                            onClick={() => scrollReviews(-1)}
-                        >
-                            <svg className="w-4 h-4 md:w-5 md:h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-
-                        {/* Reviews */}
-                        <div
-                            ref={reviewsContainerRef}
-                            className={`${styles.reviewsContainer} flex-1 flex overflow-x-auto pb-4 md:pb-6 space-x-3 md:space-x-6`}
-                        >
-                            {loopedReviews.map((review, index) => (
-                                <div key={`${review.name}-${index}`} className={styles.reviewCard}>
-                                    <div className="flex items-center mb-3 md:mb-4">
-                                        <img src={review.avatar} alt={review.name} className="w-9 h-9 md:w-12 md:h-12 rounded-full mr-2.5 md:mr-4 border-2 border-amber-200" />
-                                        <div className="min-w-0">
-                                            <h4 className="font-semibold text-amber-900 text-sm md:text-base truncate">{review.name}</h4>
-                                            <p className="text-xs text-amber-700/60 truncate">{review.location}</p>
+                            {/* Reviews */}
+                            <div
+                                ref={reviewsContainerRef}
+                                className={`${styles.reviewsContainer} flex-1 flex overflow-x-auto pb-4 md:pb-6 space-x-3 md:space-x-6`}
+                            >
+                                {loopedReviews.map((review, index) => (
+                                    <div key={`${review.id}-${index}`} className={styles.reviewCard}>
+                                        <div className="flex items-center mb-3 md:mb-4">
+                                            <img src={review.avatar_url || `https://picsum.photos/seed/review-${review.id}/120/120`} alt={review.name} className="w-9 h-9 md:w-12 md:h-12 rounded-full mr-2.5 md:mr-4 border-2 border-amber-200 object-cover" />
+                                            <div className="min-w-0">
+                                                <h4 className="font-semibold text-amber-900 text-sm md:text-base truncate">{review.name}</h4>
+                                                <p className="text-xs text-amber-700/60 truncate">{review.location || 'Verified Customer'}</p>
+                                            </div>
                                         </div>
+                                        <div className="flex mb-2 md:mb-3 gap-0.5">
+                                            {[...Array(5)].map((_, i) => (
+                                                <svg key={i} className={`w-3.5 h-3.5 md:w-5 md:h-5 ${i < review.rating ? 'text-amber-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+                                        <p className="text-amber-900/70 italic leading-relaxed text-xs md:text-base line-clamp-4">"{review.comment}"</p>
                                     </div>
-                                    <div className="flex mb-2 md:mb-3 gap-0.5">
-                                        {[...Array(5)].map((_, i) => (
-                                            <svg key={i} className={`w-3.5 h-3.5 md:w-5 md:h-5 ${i < review.rating ? 'text-amber-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        ))}
-                                    </div>
-                                    <p className="text-amber-900/70 italic leading-relaxed text-xs md:text-base line-clamp-4">"{review.comment}"</p>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
 
-                        {/* Right Arrow */}
-                        <button
-                            className={`${styles.reviewNavBtn} flex-shrink-0 bg-white p-2 md:p-2.5 rounded-full shadow-md hover:bg-amber-50 transition-all hover:shadow-lg border border-amber-100 active:scale-95 ml-2 md:ml-3 z-10`}
-                            onClick={() => scrollReviews(1)}
-                        >
-                            <svg className="w-4 h-4 md:w-5 md:h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
+                            {/* Right Arrow */}
+                            <button
+                                className={`${styles.reviewNavBtn} flex-shrink-0 bg-white p-2 md:p-2.5 rounded-full shadow-md hover:bg-amber-50 transition-all hover:shadow-lg border border-amber-100 active:scale-95 ml-2 md:ml-3 z-10`}
+                                onClick={() => scrollReviews(1)}
+                            >
+                                <svg className="w-4 h-4 md:w-5 md:h-5 text-amber-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="text-center text-amber-800/70 bg-white/70 border border-amber-100 rounded-xl p-6">
+                            Testimonials will appear here once added by admin.
+                        </div>
+                    )}
                 </AnimatedSection>
 
                 <KolamDivider />

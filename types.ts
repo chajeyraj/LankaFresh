@@ -62,3 +62,15 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  location?: string | null;
+  rating: number;
+  comment: string;
+  avatar_url?: string | null;
+  is_published: boolean;
+  sort_order: number;
+  created_at: string;
+}
