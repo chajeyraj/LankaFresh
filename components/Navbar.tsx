@@ -127,6 +127,10 @@ const Navbar: React.FC = () => {
                         </div>
                         
                         <div className="hidden md:flex items-center space-x-6">
+                            <a href="/" className="text-gray-600 hover:text-primary font-medium transition-colors relative group py-2">
+                                Home
+                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                            </a>
                             <a href="/shop" className="text-gray-600 hover:text-primary font-medium transition-colors relative group py-2">
                                 Shop
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
