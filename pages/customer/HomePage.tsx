@@ -5,15 +5,6 @@ import { getProducts, getCategories, getTestimonials } from '../../services/supa
 import { Product, Category, Testimonial } from '../../types';
 import Spinner from '../../components/Spinner';
 import NewsletterSignup from '../../components/NewsletterSignup';
-import catSpicesTea from '../../src/assets/categories/spices-tea.jpg';
-import catFoodSnacks from '../../src/assets/categories/food-snacks.jpg';
-import catHandicrafts from '../../src/assets/categories/handicrafts-art.jpg';
-import catAyurvedic from '../../src/assets/categories/ayurvedic-herbal.jpg';
-import catJaffna from '../../src/assets/categories/jaffna-traditional.jpg';
-import catPalm from '../../src/assets/categories/palm-traditional.jpg';
-import catHomemade from '../../src/assets/categories/homemade-products.jpg';
-import catHealth from '../../src/assets/categories/health-wellness.jpg';
-import catApparel from '../../src/assets/categories/apparel-textile.jpg';
 import heritageCooking from '../../src/assets/heritage-cooking.jpg';
 import pantryJaffnaSpices from '../../src/assets/pantry/jaffna-spices.jpg';
 import pantryPalmyra from '../../src/assets/pantry/palmyra-nectar.jpg';
@@ -82,18 +73,6 @@ const KolamDivider: React.FC = () => {
     );
 };
 
-const categoryPlaceholders: { [key: string]: string } = {
-    "Spices & Tea": catSpicesTea,
-    "Food & Snacks": catFoodSnacks,
-    "Handicrafts & Art": catHandicrafts,
-    "Ayurvedic & Herbal": catAyurvedic,
-    "Jaffna Traditional": catJaffna,
-    "Palm Traditional": catPalm,
-    "Homemade Products": catHomemade,
-    "Health & Wellness": catHealth,
-    "Apparel & Textile": catApparel,
-};
-
 const HomePage: React.FC = () => {
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -134,22 +113,10 @@ const HomePage: React.FC = () => {
         return () => clearInterval(id);
     }, []);
 
-    const loopedReviews = [...testimonials, ...testimonials];
-
     const scrollReviews = (direction: 1 | -1) => {
         const container = reviewsContainerRef.current;
         if (!container) return;
-
-        const step = 280;
-        const resetPoint = container.scrollWidth / 2;
-        if (direction === -1 && container.scrollLeft <= step) {
-            container.scrollLeft += resetPoint;
-        }
-        if (direction === 1 && container.scrollLeft >= resetPoint - step) {
-            container.scrollLeft -= resetPoint;
-        }
-
-        container.scrollBy({ left: direction * step, behavior: 'smooth' });
+        container.scrollBy({ left: direction * 280, behavior: 'smooth' });
     };
 
     return (
@@ -270,7 +237,7 @@ const HomePage: React.FC = () => {
                                     <a href={`/shop?category=${category.id}`} className="group block">
                                         <div className={`${styles.categoryCircle} mx-auto shadow-lg`}>
                                             <img
-                                                src={categoryPlaceholders[category.name] || `https://picsum.photos/seed/${category.id}/300/300`}
+                                                src={category.image_url || `https://picsum.photos/seed/${category.id}/300/300`}
                                                 alt={category.name}
                                                 className="w-full h-full object-cover"
                                             />
@@ -359,8 +326,8 @@ const HomePage: React.FC = () => {
                                 ref={reviewsContainerRef}
                                 className={`${styles.reviewsContainer} flex-1 flex overflow-x-auto pb-4 md:pb-6 space-x-3 md:space-x-6`}
                             >
-                                {loopedReviews.map((review, index) => (
-                                    <div key={`${review.id}-${index}`} className={styles.reviewCard}>
+                                {testimonials.map((review) => (
+                                    <div key={review.id} className={styles.reviewCard}>
                                         <div className="flex items-center mb-3 md:mb-4">
                                             <img src={review.avatar_url || `https://picsum.photos/seed/review-${review.id}/120/120`} alt={review.name} className="w-9 h-9 md:w-12 md:h-12 rounded-full mr-2.5 md:mr-4 border-2 border-amber-200 object-cover" />
                                             <div className="min-w-0">

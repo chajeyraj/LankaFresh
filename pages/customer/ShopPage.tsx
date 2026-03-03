@@ -5,15 +5,6 @@ import ProductCard from '../../components/ProductCard';
 import Spinner from '../../components/Spinner';
 import { getProducts, getCategories } from '../../services/supabase';
 import { Product, Category } from '../../types';
-import catSpicesTea from '../../src/assets/categories/spices-tea.jpg';
-import catFoodSnacks from '../../src/assets/categories/food-snacks.jpg';
-import catHandicrafts from '../../src/assets/categories/handicrafts-art.jpg';
-import catAyurvedic from '../../src/assets/categories/ayurvedic-herbal.jpg';
-import catJaffna from '../../src/assets/categories/jaffna-traditional.jpg';
-import catPalm from '../../src/assets/categories/palm-traditional.jpg';
-import catHomemade from '../../src/assets/categories/homemade-products.jpg';
-import catHealth from '../../src/assets/categories/health-wellness.jpg';
-import catApparel from '../../src/assets/categories/apparel-textile.jpg';
 import promoSpices from '../../src/assets/shop/promo-spices.jpg';
 import promoMasks from '../../src/assets/shop/promo-masks.jpg';
 import promoTea from '../../src/assets/shop/promo-tea.jpg';
@@ -144,18 +135,6 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string 
             {children}
         </section>
     );
-};
-
-const categoryPlaceholders: { [key: string]: string } = {
-    "Spices & Tea": catSpicesTea,
-    "Food & Snacks": catFoodSnacks,
-    "Handicrafts & Art": catHandicrafts,
-    "Ayurvedic & Herbal": catAyurvedic,
-    "Jaffna Traditional": catJaffna,
-    "Palm Traditional": catPalm,
-    "Homemade Products": catHomemade,
-    "Health & Wellness": catHealth,
-    "Apparel & Textile": catApparel,
 };
 
 const currencies: Currency[] = ['LKR', 'USD', 'GBP', 'EUR', 'CAD', 'AUD', 'JPY', 'INR', 'SGD', 'AED', 'CHF', 'NZD', 'SEK', 'NOK'];
@@ -384,7 +363,7 @@ const ShopPage: React.FC = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
                         {visibleCategories.map(cat => (
                             <a href={`/shop?category=${cat.id}`} key={cat.id} className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-48 block">
-                                <img src={categoryPlaceholders[cat.name] || `https://picsum.photos/seed/${cat.id}/400/300`} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <img src={cat.image_url || `https://picsum.photos/seed/${cat.id}/400/300`} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2">
                                     <h3 className="text-white text-sm sm:text-2xl font-semibold text-center">{cat.name}</h3>
                                 </div>
