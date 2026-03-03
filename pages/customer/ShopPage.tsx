@@ -138,6 +138,7 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string 
 };
 
 const currencies: Currency[] = ['LKR', 'USD', 'GBP', 'EUR', 'CAD', 'AUD', 'JPY', 'INR', 'SGD', 'AED', 'CHF', 'NZD', 'SEK', 'NOK'];
+const ALL_CATEGORY_FILTER = '__all__';
 
 const MobileCurrencyToggle: React.FC = () => {
     const { currency, setCurrency } = useCart();
@@ -201,7 +202,8 @@ const ShopPage: React.FC = () => {
 
     const filteredProducts = useMemo(() => {
         const validCategories = categories.filter((category) => category.id);
-        const categoryScope = filters.category
+        const hasCategoryFilter = !!filters.category && filters.category !== ALL_CATEGORY_FILTER;
+        const categoryScope = hasCategoryFilter
             ? getDescendantCategoryIds(filters.category, validCategories)
             : null;
 
@@ -229,8 +231,10 @@ const ShopPage: React.FC = () => {
     };
     
     const currentCategoryName = filters.category
-        ? (categories.find(c => c.id === filters.category)?.name || 'Select category')
-        : 'Select category';
+        ? (filters.category === ALL_CATEGORY_FILTER
+            ? 'All Categories'
+            : (categories.find(c => c.id === filters.category)?.name || 'Select category'))
+        : 'All Categories';
 
     const realCategories = useMemo(
         () => categories.filter((category) => !!category.id),
@@ -275,7 +279,43 @@ const ShopPage: React.FC = () => {
     }, [filters.category, categoryById]);
 
     const groupedFilteredProducts = useMemo(() => {
-        if (!filters.category || filters.search) return null;
+        if (filters.search) return null;
+
+        if (filters.category === ALL_CATEGORY_FILTER) {
+            const groupsByKey = new Map<string, { category: Category; products: Product[] }>();
+
+            filteredProducts.forEach((product) => {
+                const productCategoryId = product.category_id || product.categories?.id || '';
+                const productCategoryName =
+                    categoryById.get(productCategoryId)?.name ||
+                    product.categories?.name ||
+                    'Uncategorized';
+
+                const groupKey = productCategoryId || `uncategorized-${productCategoryName.toLowerCase()}`;
+
+                if (!groupsByKey.has(groupKey)) {
+                    groupsByKey.set(groupKey, {
+                        category: {
+                            id: productCategoryId || groupKey,
+                            name: productCategoryName,
+                            created_at: '',
+                            parent_id: null,
+                        },
+                        products: [],
+                    });
+                }
+
+                groupsByKey.get(groupKey)!.products.push(product);
+            });
+
+            const groups = Array.from(groupsByKey.values()).sort((a, b) =>
+                a.category.name.localeCompare(b.category.name)
+            );
+
+            return groups.length > 0 ? groups : null;
+        }
+
+        if (!filters.category) return null;
 
         const selectedCategory = categoryById.get(filters.category);
         if (!selectedCategory) return null;
@@ -496,10 +536,10 @@ const ShopPage: React.FC = () => {
             <li>
                 <button
                     onClick={() => {
-                        handleCategoryChange('');
+                        handleCategoryChange(ALL_CATEGORY_FILTER);
                         if (isMobile) setShowCategorySheet(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${!filters.category ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
+                    className={`w-full text-left px-3 py-2 rounded-md font-medium transition-colors ${!filters.category || filters.category === ALL_CATEGORY_FILTER ? 'bg-orange-500 text-white shadow-sm border-l-4 border-orange-700' : 'text-gray-700 hover:bg-orange-100'}`}
                 >
                     All Categories
                 </button>
