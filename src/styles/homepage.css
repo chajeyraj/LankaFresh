@@ -1,0 +1,78 @@
+/* ===== Traditional Sri Lankan Theme ===== */
+
+@keyframes floatUp { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(180, 83, 9, 0.3); } 50% { box-shadow: 0 0 20px 6px rgba(180, 83, 9, 0.15); } }
+@keyframes greetSlideFadeIn { 0% { opacity: 0; transform: translateY(12px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes borderDraw { 0% { width: 0; } 100% { width: 60px; } }
+
+.hp-greetWord { animation: greetSlideFadeIn 600ms cubic-bezier(0.22, 1, 0.36, 1); will-change: opacity, transform; display: inline-block; }
+.hp-heroPattern { background-image: radial-gradient(circle at 20% 80%, rgba(180, 83, 9, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.06) 0%, transparent 50%); }
+
+.hp-culturalCard { background: linear-gradient(145deg, #fffbeb, #fff7ed); border: 1px solid rgba(180, 83, 9, 0.12); border-radius: 16px; padding: 2rem; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); position: relative; overflow: hidden; }
+.hp-culturalCard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #92400e, #f97316, #fbbf24, #f97316, #92400e); background-size: 200% 100%; animation: shimmer 3s linear infinite; opacity: 0; transition: opacity 0.3s; }
+.hp-culturalCard:hover::before { opacity: 1; }
+.hp-culturalCard:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -12px rgba(180, 83, 9, 0.15); border-color: rgba(180, 83, 9, 0.25); }
+
+.hp-floatingIcon { animation: floatUp 3s ease-in-out infinite; font-size: 2.5rem; display: inline-block; }
+
+.hp-sectionHeading { position: relative; display: inline-block; color: #451a03; font-family: 'Georgia', serif; }
+.hp-sectionHeading::after { content: ''; display: block; margin: 8px auto 0; height: 3px; width: 0; background: linear-gradient(90deg, transparent, #b45309, transparent); border-radius: 2px; animation: borderDraw 0.8s ease-out 0.3s forwards; }
+
+.hp-categoryCircle { position: relative; width: 140px; height: 140px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; background-origin: border-box; background-clip: padding-box, border-box; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); cursor: pointer; }
+.hp-categoryCircle:hover { transform: scale(1.1) rotate(2deg); animation: pulseGlow 2s ease-in-out infinite; }
+
+.hp-pantryCard { position: relative; border-radius: 16px; overflow: hidden; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); cursor: pointer; }
+.hp-pantryCard:hover { transform: perspective(800px) rotateY(-3deg) rotateX(2deg) scale(1.02); }
+.hp-pantryCard .hp-pantryOverlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, rgba(69, 26, 3, 0.85)); color: white; transform: translateY(20%); opacity: 0.7; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.hp-pantryCard:hover .hp-pantryOverlay { transform: translateY(0); opacity: 1; }
+
+.hp-reviewCard { flex-shrink: 0; width: 320px; background: linear-gradient(145deg, #fffbeb, #ffffff); border: 1px solid rgba(180, 83, 9, 0.08); padding: 1.5rem; border-radius: 16px; transition: all 0.3s ease; scroll-snap-align: start; }
+.hp-reviewCard:hover { transform: translateY(-4px); box-shadow: 0 12px 30px -8px rgba(180, 83, 9, 0.15); border-color: rgba(180, 83, 9, 0.2); }
+
+.hp-reviewsContainer::-webkit-scrollbar { display: none; }
+.hp-reviewsContainer { -ms-overflow-style: none; scrollbar-width: none; scroll-snap-type: none; scroll-behavior: smooth; }
+.hp-reviewNavBtn:focus { outline: none; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.5); }
+
+.hp-trustItem { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border-radius: 12px; transition: all 0.3s ease; cursor: default; }
+.hp-trustItem:hover { background: rgba(180, 83, 9, 0.05); transform: translateY(-2px); }
+.hp-trustItem:hover .hp-trustIcon { transform: scale(1.2); }
+.hp-trustIcon { font-size: 1.75rem; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+
+.hp-heritageImage { position: relative; border-radius: 16px; overflow: hidden; }
+.hp-heritageImage::before { content: ''; position: absolute; inset: 8px; border: 2px solid rgba(180, 83, 9, 0.2); border-radius: 12px; z-index: 1; pointer-events: none; transition: all 0.4s ease; }
+.hp-heritageImage:hover::before { inset: 12px; border-color: rgba(180, 83, 9, 0.4); }
+
+.hp-ctaButton { display: inline-block; background: linear-gradient(135deg, #b45309, #ea580c); color: white; font-weight: 700; padding: 0.875rem 2.5rem; border-radius: 50px; text-decoration: none; position: relative; overflow: hidden; transition: all 0.3s ease; }
+.hp-ctaButton::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s ease; }
+.hp-ctaButton:hover::before { left: 100%; }
+.hp-ctaButton:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -4px rgba(180, 83, 9, 0.4); }
+
+.hp-whyCard { padding: 2rem; border-radius: 16px; background: white; border: 1px solid rgba(180, 83, 9, 0.08); transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); position: relative; }
+.hp-whyCard:hover { transform: translateY(-6px); box-shadow: 0 16px 32px -8px rgba(180, 83, 9, 0.12); border-color: rgba(180, 83, 9, 0.2); }
+.hp-whyCard:hover .hp-whyIcon { animation: floatUp 1.5s ease-in-out infinite; }
+.hp-whyIcon { font-size: 2.5rem; margin-bottom: 1rem; display: inline-block; }
+
+.hp-traditionalStrip { height: 6px; background: repeating-linear-gradient(90deg, #b45309 0px, #b45309 8px, #fbbf24 8px, #fbbf24 12px, #ea580c 12px, #ea580c 20px, #fbbf24 20px, #fbbf24 24px); border-radius: 3px; }
+
+.hp-culturalBg { background-color: #fffbeb; background-image: radial-gradient(circle at 25% 25%, rgba(180, 83, 9, 0.03) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(234, 88, 12, 0.03) 0%, transparent 50%); }
+
+@media (max-width: 768px) {
+    .hp-categoryCircle { width: 90px; height: 90px; }
+    .hp-reviewCard { width: 260px; padding: 1.25rem; }
+    .hp-culturalCard { padding: 1.25rem; }
+    .hp-ctaButton { padding: 0.75rem 2rem; font-size: 0.875rem; }
+    .hp-whyCard { padding: 1.25rem; }
+    .hp-whyIcon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .hp-pantryCard .hp-pantryOverlay { transform: translateY(0); opacity: 1; padding: 1rem; }
+    .hp-heritageImage::before { inset: 4px; }
+    .hp-trustItem { padding: 0.5rem; gap: 0.25rem; }
+    .hp-trustIcon { font-size: 1.5rem; }
+    .hp-sectionHeading::after { margin-top: 6px; }
+}
+
+@media (max-width: 480px) {
+    .hp-categoryCircle { width: 75px; height: 75px; }
+    .hp-reviewCard { width: 240px; padding: 1rem; }
+    .hp-ctaButton { padding: 0.625rem 1.5rem; font-size: 0.8125rem; }
+}

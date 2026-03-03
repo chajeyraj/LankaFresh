@@ -3,6 +3,7 @@ export interface Category {
   id: string;
   name: string;
   description?: string;
+  image_url?: string | null;
   parent_id?: string | null;
   parent?: Pick<Category, 'id' | 'name'> | null;
   created_at: string;
