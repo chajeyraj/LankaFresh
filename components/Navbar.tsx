@@ -63,6 +63,7 @@ const CurrencyToggle: React.FC = () => {
 };
 
 const Navbar: React.FC = () => {
+    const SHOP_ALL_URL = '/shop?category=__all__';
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isBannerDismissed, setIsBannerDismissed] = useState(false);
@@ -85,7 +86,7 @@ const Navbar: React.FC = () => {
         <>
             {!isBannerDismissed && (
                 <div className="bg-primary-700 text-white text-center py-2 px-3 pr-10 sm:px-4 font-medium shadow-inner relative">
-                    <a href="/shop" className="inline-block text-xs leading-snug sm:text-sm sm:leading-normal hover:underline">
+                    <a href={SHOP_ALL_URL} className="inline-block text-xs leading-snug sm:text-sm sm:leading-normal hover:underline">
                         <span className="block sm:inline">Limited Time: 15% off for the first 15 customers -</span>
                         <span className="block sm:inline font-bold sm:ml-1">Order now!</span>
                     </a>
@@ -131,7 +132,7 @@ const Navbar: React.FC = () => {
                                 Home
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
                             </a>
-                            <a href="/shop" className="text-gray-600 hover:text-primary font-medium transition-colors relative group py-2">
+                            <a href={SHOP_ALL_URL} className="text-gray-600 hover:text-primary font-medium transition-colors relative group py-2">
                                 Shop
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
                             </a>
@@ -195,11 +196,11 @@ const Navbar: React.FC = () => {
                                 </a>
                             </div>
                             <a href="/" className="px-4 py-2 text-gray-600 hover:bg-orange-100" onClick={handleLinkClick}>Home</a>
-                            <a href="/shop" className="px-4 py-2 text-gray-600 hover:bg-orange-100" onClick={handleLinkClick}>Shop</a>
+                            <a href={SHOP_ALL_URL} className="px-4 py-2 text-gray-600 hover:bg-orange-100" onClick={handleLinkClick}>Shop</a>
                             <a href="/about" className="px-4 py-2 text-gray-600 hover:bg-orange-100" onClick={handleLinkClick}>About Us</a>
                             <a href="/contact" className="px-4 py-2 text-gray-600 hover:bg-orange-100" onClick={handleLinkClick}>Contact</a>
                             <div className="px-4 pt-3">
-                                <a href="/shop" onClick={handleLinkClick} style={{ backgroundColor: '#f97316', color: '#ffffff' }} className="block text-center font-bold py-2.5 rounded-full hover:opacity-90 transition-colors">
+                                <a href={SHOP_ALL_URL} onClick={handleLinkClick} style={{ backgroundColor: '#f97316', color: '#ffffff' }} className="block text-center font-bold py-2.5 rounded-full hover:opacity-90 transition-colors">
                                     Shop Now
                                 </a>
                             </div>

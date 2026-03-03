@@ -139,6 +139,20 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string 
 
 const currencies: Currency[] = ['LKR', 'USD', 'GBP', 'EUR', 'CAD', 'AUD', 'JPY', 'INR', 'SGD', 'AED', 'CHF', 'NZD', 'SEK', 'NOK'];
 const ALL_CATEGORY_FILTER = '__all__';
+const ALL_CATEGORY_ALIASES = new Set(['', '__all__', 'all', 'all-categories', 'all_categories']);
+
+const normalizeCategoryFilter = (value: string | null) => {
+    const normalized = (value || '').trim().toLowerCase();
+    return ALL_CATEGORY_ALIASES.has(normalized) ? ALL_CATEGORY_FILTER : (value || '').trim();
+};
+
+const getFiltersFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        category: normalizeCategoryFilter(params.get('category')),
+        search: params.get('search') || ''
+    };
+};
 
 const MobileCurrencyToggle: React.FC = () => {
     const { currency, setCurrency } = useCart();
@@ -163,13 +177,7 @@ const ShopPage: React.FC = () => {
     const [showCategorySheet, setShowCategorySheet] = useState(false);
     const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<string>>(new Set());
     
-    const [filters, setFilters] = useState(() => {
-        const params = new URLSearchParams(window.location.search);
-        return {
-            category: params.get('category') || '',
-            search: params.get('search') || ''
-        };
-    });
+    const [filters, setFilters] = useState(getFiltersFromUrl);
 
     useEffect(() => {
         const fetchAllData = async () => {
@@ -189,11 +197,8 @@ const ShopPage: React.FC = () => {
 
     useEffect(() => {
         const handleRouteChange = () => {
-            const params = new URLSearchParams(window.location.search);
-            setFilters({
-                category: params.get('category') || '',
-                search: params.get('search') || ''
-            });
+            const nextFilters = getFiltersFromUrl();
+            setFilters(nextFilters);
              window.scrollTo(0, 0);
         };
         window.addEventListener('popstate', handleRouteChange);
@@ -278,6 +283,16 @@ const ShopPage: React.FC = () => {
         });
     }, [filters.category, categoryById]);
 
+    useEffect(() => {
+        if (loading) return;
+        if (!filters.category || filters.category === ALL_CATEGORY_FILTER || filters.search) return;
+        if (categoryById.has(filters.category)) return;
+
+        const correctedPath = `/shop?category=${ALL_CATEGORY_FILTER}`;
+        window.history.replaceState({}, '', correctedPath);
+        setFilters((previous) => ({ ...previous, category: ALL_CATEGORY_FILTER }));
+    }, [loading, filters.category, filters.search, categoryById]);
+
     const groupedFilteredProducts = useMemo(() => {
         if (filters.search) return null;
 
@@ -344,7 +359,7 @@ const ShopPage: React.FC = () => {
     }, [filters.category, filters.search, categoryById, childrenByParentId, realCategories, filteredProducts]);
 
     const renderFilteredView = () => (
-        <AnimatedSection>
+        <section>
             <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-3xl font-serif font-bold text-gray-800">
                     {filters.search ? `Searching for "${filters.search}"` : currentCategoryName}
@@ -385,7 +400,7 @@ const ShopPage: React.FC = () => {
                     <p className="text-gray-500 mt-2 text-sm sm:text-base">Try adjusting your search or filter.</p>
                 </div>
             )}
-        </AnimatedSection>
+        </section>
     );
 
     const renderFullShopExperience = () => {
